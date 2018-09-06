@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="TestEngine" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin/Release/TestEngine" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/Release" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-ftemplate-backtrace-limit=0" />
+					<Add directory="../../C++ Libs/Graphics/glfw-3.2.1.bin.WIN32/include" />
+					<Add directory="../../C++ Libs/Graphics/Glad_OpenGL_3.3_all/include" />
+					<Add directory="../../C++ Libs/Graphics/glm" />
+					<Add directory="../../C++ Libs/Graphics/STB" />
+					<Add directory="../../C++ Libs/Graphics/Assimp/include" />
+					<Add directory="../../C++ Libs/bullet3-2.87/src" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="libglfw3dll" />
+					<Add library="libassimp" />
+					<Add library="libBullet3Common" />
+					<Add library="libBulletCollision" />
+					<Add library="libBulletDynamics" />
+					<Add library="libLinearMath" />
+					<Add directory="../../C++ Libs/Graphics/glfw-3.2.1.bin.WIN32/lib-mingw-w64" />
+					<Add directory="../../C++ Libs/Graphics/Assimp" />
+					<Add directory="../../C++ Libs/bullet3-2.87/lib" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="Engine/API.h" />
+		<Unit filename="Engine/Core/Event/Event.h" />
+		<Unit filename="Engine/Core/Framebuffer/Framebuffer.h" />
+		<Unit filename="Engine/Core/Physics/Object.h" />
+		<Unit filename="Engine/Core/Resources/Camera/Camera.h" />
+		<Unit filename="Engine/Core/Resources/GameObject/DGameObject.h" />
+		<Unit filename="Engine/Core/Resources/GameObject/GameObject.h" />
+		<Unit filename="Engine/Core/Resources/GameObject/PDGameObject.h" />
+		<Unit filename="Engine/Core/Resources/Interfaces/Drawable.h" />
+		<Unit filename="Engine/Core/Resources/Interfaces/Updateable.h" />
+		<Unit filename="Engine/Core/Resources/Light/Light.h" />
+		<Unit filename="Engine/Core/Resources/Light/LightInterface.h" />
+		<Unit filename="Engine/Core/Resources/Light/OpenGLLightInfo.h" />
+		<Unit filename="Engine/Core/Resources/Light/SunlikeLight.h" />
+		<Unit filename="Engine/Core/Resources/Model/Mesh.h" />
+		<Unit filename="Engine/Core/Resources/Model/Model.h" />
+		<Unit filename="Engine/Core/Resources/Primitives/Plate/Plate.h" />
+		<Unit filename="Engine/Core/Resources/ResourceManager.h" />
+		<Unit filename="Engine/Core/Resources/Shader/Shader.h" />
+		<Unit filename="Engine/Core/Resources/Texture/Texture.h" />
+		<Unit filename="Engine/Core/Resources/Texture/TextureLoader.h" />
+		<Unit filename="Engine/Core/Skybox/Skybox.h" />
+		<Unit filename="Engine/Core/Utilities/Keys.h" />
+		<Unit filename="Engine/Core/Utilities/Utilities.h" />
+		<Unit filename="Engine/Core/Window/Window.h" />
+		<Unit filename="Engine/Shaders/Default.fs" />
+		<Unit filename="Engine/Shaders/Default.vs" />
+		<Unit filename="Engine/Shaders/DefaultPlate.fs" />
+		<Unit filename="Engine/Shaders/DefaultPlate.vs" />
+		<Unit filename="Engine/Shaders/Skybox/Skybox.fs" />
+		<Unit filename="Engine/Shaders/Skybox/Skybox.vs" />
+		<Unit filename="Game/Application.h" />
+		<Unit filename="IMGUI/imconfig.h" />
+		<Unit filename="IMGUI/imgui.cpp" />
+		<Unit filename="IMGUI/imgui.h" />
+		<Unit filename="IMGUI/imgui_demo.cpp" />
+		<Unit filename="IMGUI/imgui_draw.cpp" />
+		<Unit filename="IMGUI/imgui_internal.h" />
+		<Unit filename="IMGUI/imgui_widgets.cpp" />
+		<Unit filename="IMGUI/stb_rect_pack.h" />
+		<Unit filename="IMGUI/stb_textedit.h" />
+		<Unit filename="IMGUI/stb_truetype.h" />
+		<Unit filename="Main.cpp" />
+		<Unit filename="Shaders/Diffuse.fs" />
+		<Unit filename="Shaders/Diffuse.vs" />
+		<Unit filename="Shaders/GUI.fs" />
+		<Unit filename="Shaders/GUI.vs" />
+		<Unit filename="Shaders/LightBuffer.fs" />
+		<Unit filename="Shaders/LightBuffer.vs" />
+		<Unit filename="Shaders/ScreenSpace.fs" />
+		<Unit filename="Shaders/ScreenSpace.vs" />
+		<Unit filename="glad.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
