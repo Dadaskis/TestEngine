@@ -19,7 +19,7 @@ private:
 
     glm::mat4 projection;
 
-    ImGuiIO& imguiIO;
+//    ImGuiIO& imguiIO;
 public:
     void updatePhysics(){
         getPhysicsWorld()->stepSimulation(getDeltaTime());
@@ -39,16 +39,16 @@ public:
     }
 
     void draw() {
-        ImGui::EndFrame();
+//        ImGui::EndFrame();
 
-        ImDrawData* drawData = ImGui::GetDrawData();
-        drawData->CmdLists
+//        ImDrawData* drawData = ImGui::GetDrawData();
+  //      drawData->CmdLists
 
         runEvent("Loop");
         runBindings();
         swapBuffers();
-        ImGui::NewFrame();
-        imguiIO.DeltaTime = getDeltaTime();
+    //    ImGui::NewFrame();
+  //      imguiIO.DeltaTime = getDeltaTime();
     }
 
     void setSkybox(unsigned int cubemap) {
@@ -59,8 +59,8 @@ public:
         createWindow(width, height, title);
 
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        glDisable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
         glDepthFunc(GL_LESS);
 
         projection = glm::perspective(glm::radians(90.0f), getWidth() / getHeight(), 0.0001f, 10000000.0f);
@@ -73,8 +73,8 @@ public:
 
         createEvent("Loop");
 
-        ImGui::CreateContext();
-        imguiIO = ImGui::GetIO();
+//        ImGui::CreateContext();
+  //      imguiIO = ImGui::GetIO();
     }
 
     API() {

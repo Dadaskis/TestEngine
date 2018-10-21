@@ -24,7 +24,7 @@ private:
     std::vector<SunlikeLight*> sunlikeLights;
     std::vector<Light*> lights;
     std::vector<int> skyboxCubemaps;
-    std::vector<OpenGLLightInfo> lightsInfo;
+    std::vector<LightInterface*> allLights;
     std::vector<Plate*> plates;
     std::vector<GameObject*> gameObjects;
     std::vector<DGameObject*> dGameObjects;
@@ -35,23 +35,6 @@ private:
     glm::mat4* projection;
 
     btDiscreteDynamicsWorld* physicsWorld;
-
-    void translateLightInfo(LightInterface* light) {
-        OpenGLLightInfo info;
-
-        info.color = light->getColor();
-        info.intensive = light->getIntensive();
-        info.position = light->getPosition();
-        info.direction = glm::vec3(-2.0, -2.0, -2.0);
-        info.power = light->getPower();
-        info.type = light->getType();
-        if(light->getType() == LIGHT_TYPE_SUNLIKE) {
-            SunlikeLight* sunLight = reinterpret_cast<SunlikeLight*>(light);
-            info.direction = sunLight->getDirection();
-        }
-
-        lightsInfo.push_back(info);
-    }
 
 public:
     ResourceManager() {
@@ -83,15 +66,15 @@ public:
 
     void updateLightsInfo(Shader* shader) {
         shader->use();
-        shader->setInt("lightsCount", lightsInfo.size());
-        for(int index = 0; index < lightsInfo.size(); index++) {
+        shader->setInt("lightsCount", allLights.size());
+        for(int index = 0; index < allLights.size(); index++) {
             std::string lightUniform = std::string("lights[") + std::to_string(index) + std::string("]");
-            shader->setVec3(lightUniform + ".color", lightsInfo[index].color);
-            shader->setVec3(lightUniform + ".direction", lightsInfo[index].direction);
-            shader->setVec3(lightUniform + ".intensive", lightsInfo[index].intensive);
-            shader->setVec3(lightUniform + ".position", lightsInfo[index].position);
-            shader->setInt(lightUniform + ".type", lightsInfo[index].type);
-            shader->setInt(lightUniform + ".power", lightsInfo[index].power);
+            shader->setVec3(lightUniform + ".color", allLights[index]->getColor());
+            shader->setVec3(lightUniform + ".direction", allLights[index]->getDirection());
+            shader->setVec3(lightUniform + ".intensive", allLights[index]->getIntensive());
+            shader->setVec3(lightUniform + ".position", allLights[index]->getPosition());
+            shader->setInt(lightUniform + ".type", allLights[index]->getType());
+            shader->setInt(lightUniform + ".power", allLights[index]->getPower());
         }
     }
 
@@ -169,8 +152,8 @@ public:
                                      const glm::vec3& direction = glm::vec3(1.0)) {
         SunlikeLight* light = new SunlikeLight(color, intensive, direction, 1);
         sunlikeLights.push_back(light);
-        translateLightInfo((LightInterface*)light);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)NULL);
+        allLights.push_back(light);
         return light;
     }
 
@@ -194,7 +177,7 @@ public:
                        int power = 1) {
         Light* light = new Light(color, intensive, position, power);
         lights.push_back(light);
-        translateLightInfo((LightInterface*)light);
+        allLights.push_back(light);
         return light;
     }
 

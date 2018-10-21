@@ -5,7 +5,7 @@
 
 namespace Engine {
 
-class Light : protected LightInterface {
+class Light : public LightInterface {
 public:
     Light(const glm::vec3& color = glm::vec3(1.0),
           const glm::vec3& intensive = glm::vec3(1.0),

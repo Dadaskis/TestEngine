@@ -8,5 +8,5 @@ in vec2 fragTexCoords;
 out vec4 outColor;
 
 void main(){
-    outColor = texture(lightBuffer, fragTexCoords) + texture(diffuseBuffer, fragTexCoords);
+    outColor = texture(lightBuffer, fragTexCoords);
 }

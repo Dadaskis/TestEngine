@@ -6,7 +6,7 @@
 
 namespace Engine {
 namespace TextureUtilities {
-unsigned int loadTexture(const std::string& path, bool reverse = true) {
+unsigned int loadTexture(const std::string& path, bool reverse = false) {
     stbi_set_flip_vertically_on_load(reverse);
 
     unsigned int textureID;

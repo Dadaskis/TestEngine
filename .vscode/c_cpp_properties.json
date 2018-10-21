@@ -1,0 +1,30 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}\\Compiler\\msys32\\mingw32\\i686-w64-mingw32\\include\\**",
+                "${workspaceFolder}\\Compiler\\msys32\\mingw32\\include\\c++\\7.2.0\\**",
+                "${workspaceFolder}\\**",
+                "${workspaceFolder}\\Tools\\assimp\\include\\**", 
+                "${workspaceFolder}\\Tools\\glad\\include",
+                "${workspaceFolder}\\Tools\\glfw\\include\\**",
+                "${workspaceFolder}\\Tools\\glm\\**",
+                "${workspaceFolder}\\Tools\\imgui\\**",
+                "${workspaceFolder}\\Tools\\stb\\**",
+                "${workspaceFolder}\\Tools\\bullet_physics\\src\\**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.16299.0",
+            "compilerPath": "${workspaceFolder}\\Compiler\\msys32\\mingw32\\bin\\g++.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}

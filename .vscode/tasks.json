@@ -1,0 +1,42 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "DEBUG",
+            "type": "process",
+            "command": "${workspaceFolder}\\Compiler\\msys32\\mingw32\\bin\\g++",
+            "args": [
+                "-O3", 
+                "-march=native", 
+                "-Wall",
+                "-g", 
+                "-I\\Tools\\assimp\\include",
+                "-I\\Tools\\bullet_physics\\src",
+                "-I\\Tools\\glad\\include",
+                "-I\\Tools\\glfw\\include",
+                "-I\\Tools\\glm",
+                "-I\\Tools\\imgui",
+                "-I\\Tools\\stb",
+                "-L\\Tools\\assimp",
+                "-L\\Tools\\bullet_physics\\lib",
+                "-L\\Tools\\glfw\\lib-mingw-w64",
+                "-lassimp",
+                "-lBullet3Common",
+                "-lBulletDynamics",
+                "-lBulletCollision",
+                "-lBulletLinearMath",
+                "-lGIMPACTUtils",
+                "glad.c",
+                "Main.cpp", 
+                "-o", 
+                "DGM.exe"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

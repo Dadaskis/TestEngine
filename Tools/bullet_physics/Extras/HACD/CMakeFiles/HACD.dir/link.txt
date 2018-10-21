@@ -1,0 +1,2 @@
+C:/msys32/mingw32/bin/ar.exe qc ../../lib/libHACD.a  CMakeFiles/HACD.dir/hacdGraph.obj CMakeFiles/HACD.dir/hacdHACD.obj CMakeFiles/HACD.dir/hacdICHull.obj CMakeFiles/HACD.dir/hacdManifoldMesh.obj
+C:/msys32/mingw32/bin/ranlib.exe ../../lib/libHACD.a

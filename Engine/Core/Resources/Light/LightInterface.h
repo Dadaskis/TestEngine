@@ -13,6 +13,7 @@ private:
     glm::vec3 color;
     glm::vec3 intensive;
     glm::vec3 position;
+    glm::vec3 direction;
     int type;
     int power;
 protected:
@@ -54,6 +55,15 @@ public:
 
     int getPower() {
         return power;
+    }
+
+    void setDirection(const glm::vec3& direction) {
+        this->direction = direction;
+        this->setPosition(this->direction);
+    }
+
+    glm::vec3 getDirection() {
+        return direction;
     }
 
     virtual ~LightInterface() {}

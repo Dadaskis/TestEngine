@@ -9,7 +9,7 @@ int main() {
 
     engine.getPhysicsWorld()->setGravity(btVector3(0, -10, 0));
 
-    //engine.disableCursor();
+    engine.disableCursor();
 
     engine.setSkybox(
         engine.loadSkybox(
@@ -22,8 +22,7 @@ int main() {
         )
     );
 
-    Engine::Model* convexHullModel = engine.loadModel("Models\\ConvexHullTester.dae"),
-                 * terrainModel    = engine.loadModel("Models\\PseudoTerrain.dae");
+    Engine::Model* houseModel = engine.loadModel("D:\\C++ Projects\\TestEngine\\Models\\Castle OBJ.obj");
 
     std::mt19937 generator;
     std::uniform_int_distribution<int> function(-10, 10);
@@ -33,26 +32,14 @@ int main() {
         generator.seed(currentTimePoint.time_since_epoch().count());
     }
 
-
-    Engine::PDGameObject* hullTest = engine.createPDGameObject();
-    hullTest->setModel(convexHullModel);
+    Engine::PDGameObject* house = engine.createPDGameObject();
+    house->setModel(houseModel);
     {
-        Engine::Physics::Object* object = hullTest->getPhysicsObject();
-        object->setCollider(convexHullModel);
-        object->createBody();
-        object->setMass(glm::vec4(1.0f));
-    }
-    hullTest->setPosition(glm::vec3(0, 300, 0));
-
-    Engine::PDGameObject* terrain = engine.createPDGameObject();
-    terrain->setModel(terrainModel);
-    {
-        Engine::Physics::Object* object = terrain->getPhysicsObject();
-        object->setStaticCollider(terrainModel);
+        Engine::Physics::Object* object = house->getPhysicsObject();
+        object->setStaticCollider(houseModel);
         object->createBody();
         object->setMass(glm::vec4(0.0f));
     }
-    terrain->setPosition(glm::vec3(0, -10, 0));
 
 
     Engine::Camera* camera = engine.createCamera();
@@ -72,37 +59,41 @@ int main() {
     camera->setPosition(glm::vec3(10, 100, 10));
     cameraObject.setPosition(glm::vec3(10, 100, 10));
 
+    house->setPosition({10, 10, 10});
+
     bool pressed = false;
     int counter = 0;
     int lightCounter = 0;
 
     engine.setBinding("fly_front", KEY_W, [&]() {
-        //camera->processKeyboard(Engine::CAMERA_MOVE_FORWARD, engine.getDeltaTime());
-        cameraObject.setVelocity(camera->getFront() * glm::vec3(5));
+        camera->processKeyboard(Engine::CAMERA_MOVE_FORWARD, engine.getDeltaTime());
+        //cameraObject.setVelocity(camera->getFront() * glm::vec3(5));
     });
 
     engine.setBinding("fly_left", KEY_A, [&]() {
-        //camera->processKeyboard(Engine::CAMERA_MOVE_LEFT, engine.getDeltaTime());
+        camera->processKeyboard(Engine::CAMERA_MOVE_LEFT, engine.getDeltaTime());
     });
 
     engine.setBinding("fly_back", KEY_S, [&]() {
-        //camera->processKeyboard(Engine::CAMERA_MOVE_BACKWARD, engine.getDeltaTime());
+        camera->processKeyboard(Engine::CAMERA_MOVE_BACKWARD, engine.getDeltaTime());
     });
 
     engine.setBinding("fly_right", KEY_D, [&]() {
-        //camera->processKeyboard(Engine::CAMERA_MOVE_RIGHT, engine.getDeltaTime());
+        camera->processKeyboard(Engine::CAMERA_MOVE_RIGHT, engine.getDeltaTime());
     });
 
     engine.setBinding("fly_up", KEY_SPACE, [&]() {
-        //camera->processKeyboard(Engine::CAMERA_MOVE_UP, engine.getDeltaTime());
+        camera->processKeyboard(Engine::CAMERA_MOVE_UP, engine.getDeltaTime());
     });
 
     engine.setBinding("fly_down", KEY_LEFT_CONTROL, [&]() {
-        //camera->processKeyboard(Engine::CAMERA_MOVE_DOWN, engine.getDeltaTime());
+        camera->processKeyboard(Engine::CAMERA_MOVE_DOWN, engine.getDeltaTime());
     });
 
-    engine.setBinding("release", MOUSE_BUTTON_LEFT, [&](){
-        hullTest->getPhysicsObject()->setMass(glm::vec4(1.0f));
+    Engine::Light* light1 = engine.createLight(glm::vec3(1.0, 0, 0), glm::vec3(0.5), camera->getPosition(), 0.2);
+
+    engine.setBinding("setLightPosition", MOUSE_BUTTON_LEFT, [&](){
+        light1->setPosition(camera->getPosition());
     });
 
     engine.setBinding("return", KEY_R, [&](){
@@ -125,8 +116,6 @@ int main() {
     lightShader.setFragment("Shaders\\LightBuffer.fs");
     lightShader.compile();
 
-    engine.updateLightsInfo(&lightShader);
-
     Engine::Shader screenShader;
     screenShader.setVertex("Shaders\\ScreenSpace.vs");
     screenShader.setFragment("Shaders\\ScreenSpace.fs");
@@ -143,42 +132,41 @@ int main() {
 
     Engine::Plate* screenSpace = engine.createPlate();
 
+    lightTexture.bind(0);
+    diffuseTexture.bind(1);
+    screenShader.use();
+    screenShader.setInt("lightBuffer", lightTexture.getActiveUnit());
+    screenShader.setInt("diffuseBuffer", diffuseTexture.getActiveUnit());
+
     auto modelDrawing = [&](Engine::Shader* shader) {
-        //firstPlatform->draw(shader);
-        //secondPlatform->draw(shader);
-        hullTest->draw(shader);
-        terrain->draw(shader);
+        house->draw(shader);
     };
 
-    ImGui::CreateContext();
-    ImGuiIO& imguiIO = ImGui::GetIO();
-    imguiIO.DisplaySize = ImVec2(engine.getWidth(), engine.getHeight());
-
-    unsigned char* fontPixels = NULL;
-    int fontSizeX, fontSizeY;
-    imguiIO.Fonts->GetTexDataAsRGBA32(&fontPixels, &fontSizeX, &fontSizeY);
+    //unsigned char* fontPixels = NULL;
+  //  int fontSizeX, fontSizeY;
+//    imguiIO.Fonts->GetTexDataAsRGBA32(&fontPixels, &fontSizeX, &fontSizeY);
 
     while(engine.isOpen()) {
+        engine.updateLightsInfo(&lightShader);
         engine.updatePhysics();
-        imguiIO.DeltaTime = engine.getDeltaTime();
-        camera->setPosition(cameraObject.getPosition());
+//        imguiIO.DeltaTime = engine.getDeltaTime();
+        //camera->setPosition(cameraObject.getPosition());
 
         //firstPlatform->update(engine.getDeltaTime());
         //secondPlatform->update(engine.getDeltaTime());
-        hullTest->update(engine.getDeltaTime());
         //terrain->update(engine.getDeltaTime());
 
 
         glm::vec2 cursorPosition = engine.getCursorPosition();
         camera->processMouseMovement(cursorPosition.x, cursorPosition.y);
 
-        diffuse.bind();
+        /*diffuse.bind();
         Engine::Framebuffer::clearColorBuffer();
         Engine::Framebuffer::clearDepthBuffer();
         engine.drawSkybox();
         diffuseShader.use();
         diffuseShader.setMat4("view", camera->getViewMatrix());
-        modelDrawing(&diffuseShader);
+        modelDrawing(&diffuseShader);*/
 
         lightBuffer.bind();
         Engine::Framebuffer::clearColorBuffer();
@@ -188,24 +176,11 @@ int main() {
         modelDrawing(&lightShader);
 
         engine.disableDepthTest();
-
-        Engine::Framebuffer::bindDefault();
-        Engine::Framebuffer::clearColorBuffer();
         lightTexture.bind(0);
         diffuseTexture.bind(1);
-        screenShader.use();
-        screenShader.setInt("lightBuffer", lightTexture.getActiveUnit());
-        screenShader.setInt("diffuseBuffer", diffuseTexture.getActiveUnit());
+        Engine::Framebuffer::bindDefault();
+        Engine::Framebuffer::clearColorBuffer();
         screenSpace->draw(&screenShader);
-
-        ImGui::NewFrame();
-
-        ImGui::Text("Hello, GUI");
-        ImGui::ShowDemoWindow(NULL);
-
-        ImGui::EndFrame();
-        ImGui::Render();
-
         engine.enableDepthTest();
 
         engine.draw();
