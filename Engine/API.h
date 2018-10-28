@@ -2,7 +2,6 @@
 #define ENGINE_INCLUDE
 
 #include <glad/glad.h>
-#include <glad/glad.h>
 
 #include <btBulletDynamicsCommon.h>
 #include "Core/Window/Window.h"

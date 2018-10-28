@@ -2,10 +2,12 @@
 #include <random>
 #include <chrono>
 #include "Engine/API.h"
-#include "IMGUI/imgui.h"
+//#include "IMGUI/imgui.h"
 
 int main() {
+    std::cout << 1;
     Engine::API engine(800, 600, "TestEngine");
+    std::cout << 2;
 
     engine.getPhysicsWorld()->setGravity(btVector3(0, -10, 0));
 
