@@ -4,7 +4,16 @@
 #include "Engine/API.h"
 //#include "IMGUI/imgui.h"
 
-int main() {
+#define int64 long long
+#define uint64 unsigned long long
+#define int32 int
+#define uint32 unsigned int
+#define int16 short
+#define uint16 unsigned short
+#define int8 char
+#define uint8 unsigned char
+
+int32 main() {
     std::cout << 1;
     Engine::API engine(800, 600, "TestEngine");
     std::cout << 2;
@@ -27,11 +36,11 @@ int main() {
     Engine::Model* houseModel = engine.loadModel("D:\\C++ Projects\\TestEngine\\Models\\Castle OBJ.obj");
 
     std::mt19937 generator;
-    std::uniform_int_distribution<int> function(-10, 10);
+    std::uniform_int_distribution<int32> function(-10, 10);
     {
         using Clock = std::chrono::high_resolution_clock;
-        Clock::time_point currentTimePoint = Clock::now();
-        generator.seed(currentTimePoint.time_since_epoch().count());
+        Clock::time_point currentTimePoint32 = Clock::now();
+        generator.seed(currentTimePoint32.time_since_epoch().count());
     }
 
     Engine::PDGameObject* house = engine.createPDGameObject();
@@ -64,8 +73,8 @@ int main() {
     house->setPosition({10, 10, 10});
 
     bool pressed = false;
-    int counter = 0;
-    int lightCounter = 0;
+    int32 counter = 0;
+    int32 lightCounter = 0;
 
     engine.setBinding("fly_front", KEY_W, [&]() {
         camera->processKeyboard(Engine::CAMERA_MOVE_FORWARD, engine.getDeltaTime());
@@ -144,31 +153,12 @@ int main() {
         house->draw(shader);
     };
 
-    //unsigned char* fontPixels = NULL;
-  //  int fontSizeX, fontSizeY;
-//    imguiIO.Fonts->GetTexDataAsRGBA32(&fontPixels, &fontSizeX, &fontSizeY);
-
     while(engine.isOpen()) {
         engine.updateLightsInfo(&lightShader);
         engine.updatePhysics();
-//        imguiIO.DeltaTime = engine.getDeltaTime();
-        //camera->setPosition(cameraObject.getPosition());
-
-        //firstPlatform->update(engine.getDeltaTime());
-        //secondPlatform->update(engine.getDeltaTime());
-        //terrain->update(engine.getDeltaTime());
-
 
         glm::vec2 cursorPosition = engine.getCursorPosition();
         camera->processMouseMovement(cursorPosition.x, cursorPosition.y);
-
-        /*diffuse.bind();
-        Engine::Framebuffer::clearColorBuffer();
-        Engine::Framebuffer::clearDepthBuffer();
-        engine.drawSkybox();
-        diffuseShader.use();
-        diffuseShader.setMat4("view", camera->getViewMatrix());
-        modelDrawing(&diffuseShader);*/
 
         lightBuffer.bind();
         Engine::Framebuffer::clearColorBuffer();
