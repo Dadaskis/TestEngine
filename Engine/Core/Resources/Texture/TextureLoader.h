@@ -6,10 +6,10 @@
 
 namespace Engine {
 namespace TextureUtilities {
-unsigned int loadTexture(const std::string& path, bool reverse = false) {
+uint32 loadTexture(const std::string& path, bool reverse = false) {
     stbi_set_flip_vertically_on_load(reverse);
 
-    unsigned int textureID;
+    uint32 textureID;
     glGenTextures(1, &textureID);
 
     int width, height, nrComponents;
@@ -44,13 +44,13 @@ unsigned int loadTexture(const std::string& path, bool reverse = false) {
 
 
 
-unsigned int loadCubemap(const std::vector<std::string>& faces) {
-    unsigned int textureID;
+uint32 loadCubemap(const std::vector<std::string>& faces) {
+    uint32 textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
     int width, height, nrChannels;
-    for (unsigned int i = 0; i < faces.size(); i++) {
+    for (uint32 i = 0; i < faces.size(); i++) {
         unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
         if (data) {
             glTexImage2D(

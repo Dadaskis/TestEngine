@@ -52,8 +52,8 @@ public:
         return &object;
     }
 
-    void draw(Shader* shader) {
-        dObject.draw(shader);
+    void draw(GL::Shader* GL::Shader) {
+        dObject.draw(GL::Shader);
     }
 
     void update(float deltaTime){

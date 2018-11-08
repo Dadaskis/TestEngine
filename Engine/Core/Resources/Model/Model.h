@@ -11,7 +11,7 @@
 #include <assimp/postprocess.h>
 
 #include "Mesh.h"
-#include "../Shader/Shader.h"
+#include "../../OpenGL/Shader/Shader.h"
 #include "../Texture/Texture.h"
 #include "../Texture/TextureLoader.h"
 #include "../../Utilities/Utilities.h"
@@ -24,6 +24,22 @@
 #include <vector>
 
 namespace Engine {
+
+class Model;
+
+namespace Global{
+
+namespace Private{
+
+std::vector<Model*> models;
+
+};
+
+const std::vector<Model*> getModels() const{
+    return Private::models;
+}
+
+};
 
 class Model {
 private:
@@ -43,23 +59,23 @@ private:
 
 
     void processNode(aiNode *node, const aiScene *scene) {
-        for(unsigned int i = 0; i < node->mNumMeshes; i++) {
+        for(uint32 i = 0; i < node->mNumMeshes; i++) {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
             meshes.push_back(processMesh(mesh, scene));
         }
-        for(unsigned int i = 0; i < node->mNumChildren; i++) {
+        for(uint32 i = 0; i < node->mNumChildren; i++) {
             processNode(node->mChildren[i], scene);
         }
     }
 
     Mesh processMesh(aiMesh *mesh, const aiScene *scene) {
         std::vector<Vertex> vertices;
-        std::vector<unsigned int> indices;
+        std::vector<uint32> indices;
         std::vector<Texture> textures;
         std::vector<float> vertexVectors;
 
-        for(unsigned int i = 0; i < mesh->mNumVertices; i++) {
+        for(uint32 i = 0; i < mesh->mNumVertices; i++) {
             Vertex vertex;
             glm::vec3 vector;
 
@@ -93,10 +109,10 @@ private:
             vertices.push_back(vertex);
         }
 
-        for(unsigned int i = 0; i < mesh->mNumFaces; i++) {
+        for(uint32 i = 0; i < mesh->mNumFaces; i++) {
             aiFace face = mesh->mFaces[i];
 
-            for(unsigned int j = 0; j < face.mNumIndices; j++)
+            for(uint32 j = 0; j < face.mNumIndices; j++)
                 indices.push_back(face.mIndices[j]);
         }
 
@@ -121,13 +137,13 @@ private:
     }
 
     std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, const std::string& typeName) {
-        std::vector<Texture> textures;
-        for(unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
+        std::vector<Texture> meshTextures;
+        for(uint32 i = 0; i < mat->GetTextureCount(type); i++) {
             aiString str;
             mat->GetTexture(type, i, &str);
 
             bool skip = false;
-            for(unsigned int j = 0; j < textures_loaded.size(); j++) {
+            for(uint32 j = 0; j < textures_loaded.size(); j++) {
                 if(std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0) {
                     textures.push_back(textures_loaded[j]);
                     skip = true;
@@ -135,18 +151,17 @@ private:
                 }
             }
             if(!skip) {
-                Texture texture;
-                texture.ID = TextureUtilities::loadTexture(str.C_Str());
-                texture.type = typeName;
-                texture.path = str.C_Str();
+                Texture texture(TextureUtilities::loadTexture(str.C_Str()));
+                texture.setType(typeName);
+                texture.setPath(str.C_Str());
+                meshTextures.push_back(texture);
                 textures.push_back(texture);
-                textures_loaded.push_back(texture);
             }
         }
-        return textures;
+        return meshTextures;
     }
 public:
-    mutable std::vector<Texture> textures_loaded;
+    mutable std::vector<Texture> textures;
     mutable std::vector<Mesh> meshes;
     mutable std::string directory;
     mutable bool gammaCorrection;
@@ -171,6 +186,34 @@ public:
         }
     }
 
+    std::vector<Texture>& getTextures(){
+        return this->textures;
+    }
+
+    void setTextures(const std::vector<Texture>& textures){
+        this->textures = textures;
+    }
+
+    std::vector<Mesh>& getMeshes(){
+        return this->meshes;
+    }
+
+    std::string& getDirectory(){
+        return this->directory;
+    }
+
+    void setDirectory(const std::string& directory){
+        this->directory = directory;
+    }
+
+    bool& getGammaCorrection(){
+        return this->gammaCorrection;
+    }
+
+    void setGammaCorrection(const bool& gammaCorrection){
+        this->gammaCorrection = gammaCorrection;
+    }
+
     btGImpactMeshShape* getCollision(){
         btGImpactMeshShape* collision = new btGImpactMeshShape(collider);
         collision->updateBound();
@@ -184,7 +227,7 @@ public:
         return collision;
     }
 
-    void draw(Shader* shader) {
+    void draw(GL::Shader* shader) {
         shader->use();
         for(auto mesh = meshes.begin(); mesh != meshes.end(); mesh++) {
             mesh->draw(shader);

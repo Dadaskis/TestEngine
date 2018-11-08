@@ -9,19 +9,19 @@ namespace GL{
 
 class Buffer{
 private:
-    unsigned int VAO, EBO;
-    std::vector<unsigned int> VBOs;
+    uint32 VAO, EBO;
+    std::vector<uint32> VBOs;
 public:
     Buffer(){
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &EBO);
     }
 
-    void bind(){
+    void bind() const {
         glBindVertexArray(VAO);
     }
 
-    void unbind(){
+    void unbind() const {
         glBindVertexArray(NULL);
     }
 
@@ -38,9 +38,9 @@ public:
         glBufferData(GL_ARRAY_BUFFER, sizeof(Type) * count, data, GL_STATIC_DRAW);
     }
 
-    void setSequence(unsigned int* sequence, int count){
+    void setSequence(uint32* sequence, int count){
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * count, sequence, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * count, sequence, GL_STATIC_DRAW);
     }
 
     void enableAttribute(int index){
@@ -52,7 +52,7 @@ public:
     }
 
     template<class TypeOnGPU, class Type>
-    void setAttribute(int index, int size = 1, int pointer = 0){
+    void setAttribute(uint32 index, uint32 size = 1, int pointer = 0){
         glVertexAttribPointer(index, size, TypeOnGPU, false, sizeof(Type), (void*)pointer);
     }
 

@@ -65,7 +65,7 @@ private:
     }
 
 public:
-    void createWindow(unsigned int width, unsigned int height, const std::string& title) {
+    void createWindow(uint32 width, uint32 height, const std::string& title) {
 #ifndef ENGINE_WINDOW_FIRST_CREATE
 #define ENGINE_WINDOW_FIRST_CREATE
         if(!glfwInit()) {
@@ -95,7 +95,7 @@ public:
 
     Window() {}
 
-    Window(unsigned int width, unsigned int height, const std::string& title) {
+    Window(uint32 width, uint32 height, const std::string& title) {
         createWindow(width, height, title);
     }
 

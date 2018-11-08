@@ -5,93 +5,77 @@
 
 namespace Engine {
 
-struct AllPlatesBase {
-    unsigned int VAO = 0, VBO = 0;
-    float verteces[24] = {
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f, 0.0f,
-        1.0f, -1.0f,  1.0f, 0.0f,
+namespace Global{
 
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        1.0f, -1.0f,  1.0f, 0.0f,
-        1.0f,  1.0f,  1.0f, 1.0f
+namespace Plate{
+
+GL::Buffer base;
+
+void initialize(){
+    base.create(3);
+    
+    float pos[] = {
+        -1.0, -1.0, 0,
+        1.0, -1.0, 0,
+        -1.0, 1.0, 0,
+        1.0, 1.0, 0
     };
 
-    void initialize() {
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(verteces), &verteces[0], GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)NULL);
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-        glBindVertexArray(0);
-    }
+    float normals[] = {
+        0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0
+    };
 
-    void draw(Shader* shader) {
-        glBindVertexArray(VAO);
-        shader->use();
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
+    float texCoords[] = {
+        0.0, 1.0,
+        1.0, 1.0,
+        0.0, 0.0,
+        1.0, 0.0
+    };
+
+    uint32 sequence[] = {
+        0, 2, 3,
+        0, 1, 3
+    };
+
+    base.setData<float>(0, &pos[0], 3 * 4);
+    base.setData<float>(1, &normals[0], 3 * 4);
+    base.setData<float>(2, &texCoords[0], 2 * 4);
+    base.setSequence(&sequence[0], 3 * 2);
+    
+    base.enableAttribute(0);
+    base.setAttribute<glm::vec3, float>(0, 3 * 4);
+
+    base.enableAttribute(1);
+    base.setAttribute<glm::vec3, float>(1, 3 * 4);
+
+    base.enableAttribute(2);
+    base.setAttribute<glm::vec2, float>(2, 2 * 4);
+
+    base.unbind();
+}
+
 };
 
-class Plate {
+};
+
+class Plate{
 private:
-    glm::mat4 modelSpace = glm::mat4(1.0);
-    static AllPlatesBase plateBase;
+    GL::Buffer* vertexData;
 public:
-    Plate() {}
-    Plate(const Plate& plate) {}
-    void operator=(const Plate& plate) {}
-
-    void setPosition(float X, float Y, float Z) {
-        modelSpace = glm::translate(glm::mat4(1.0), glm::vec3(X, Y, Z));
+    Plate(){
+        vertexData = &Global::Plate::base;
     }
 
-    void setPosition(const glm::vec3& position) {
-        modelSpace = glm::translate(glm::mat4(1.0), position);
-    }
-
-    void setPositionCommutative(float X, float Y, float Z) {
-        modelSpace = glm::translate(modelSpace, glm::vec3(X, Y, Z));
-    }
-
-    void setPositionCommutative(const glm::vec3& position) {
-        modelSpace = glm::translate(modelSpace, position);
-    }
-
-    void setRotation(float X, float Y, float Z, float angle) {
-        modelSpace = glm::rotate(glm::mat4(1.0), angle, glm::vec3(X, Y, Z));
-    }
-
-    void setRotation(const glm::vec3& rotateVector, float angle) {
-        modelSpace = glm::rotate(glm::mat4(1.0), angle, rotateVector);
-    }
-
-    void setRotationCommutative(float X, float Y, float Z, float angle) {
-        modelSpace = glm::rotate(modelSpace, angle, glm::vec3(X, Y, Z));
-    }
-
-    void setRotationCommutative(const glm::vec3& rotateVector, float angle) {
-        modelSpace = glm::rotate(modelSpace, angle, rotateVector);
-    }
-
-    glm::mat4* getModelSpace() {
-        return &modelSpace;
-    }
-
-    void draw(Shader* shader) {
-        plateBase.draw(shader);
-    }
-
-    static AllPlatesBase* getPlateBase() {
-        return &plateBase;
+    void draw(const GL::Shader& shader) const {
+        shader.use();
+        vertexData->bind();
+        glDrawElements(GL_TRIANGLES, 3 * 2, GL_UNSIGNED_INT, NULL);
+        vertexData->unbind();
     }
 };
-
-AllPlatesBase Plate::plateBase = AllPlatesBase();
 
 };
 

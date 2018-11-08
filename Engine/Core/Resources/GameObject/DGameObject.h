@@ -49,10 +49,10 @@ public:
         this->position = position;
     }
 
-    void draw(Shader* shader) {
-        shader->use();
-        shader->setMat4("model", modelSpace);
-        model->draw(shader);
+    void draw(GL::Shader* GL::Shader) {
+        GL::Shader->use();
+        GL::Shader->setMat4("model", modelSpace);
+        model->draw(GL::Shader);
     }
 };
 

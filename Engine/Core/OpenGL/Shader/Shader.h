@@ -1,5 +1,5 @@
-#ifndef ENGINE_SHADER_INCLUDE
-#define ENGINE_SHADER_INCLUDE
+#ifndef ENGINE_OPENGL_SHADER_INCLUDE
+#define ENGINE_OPENGL_SHADER_INCLUDE
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -12,18 +12,21 @@
 
 namespace Engine {
 
+namespace GL {
+
 class Shader {
 private:
     std::string vertexCode, fragmentCode, extendVertexCode = "", extendFragmentCode = "";
+    uint32 ID;
 
-    void checkCompileErrors(GLuint shader, std::string type) {
+    void checkCompileErrors(GLuint shader, const std::string& type) const {
         GLint success;
         GLchar infoLog[1024];
         if(type != "PROGRAM") {
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
             if(!success) {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+                std::cout << "ERROR::Shader_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
             }
         } else {
             glGetProgramiv(shader, GL_LINK_STATUS, &success);
@@ -36,16 +39,18 @@ private:
 
 
 public:
-    mutable unsigned int ID;
-
     Shader() {}
-    Shader(const Shader& shader) {}
-    void operator=(const Shader& shader) {}
+    Shader(const Shader& Shader) {}
+    void operator=(const Shader& Shader) {}
 
     Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
         setVertex(vertexShaderPath);
         setFragment(fragmentShaderPath);
         compile();
+    }
+
+    int& getID() const {
+        return this->ID;
     }
 
     void setVertex(const std::string& path) {
@@ -69,7 +74,7 @@ public:
         fragmentCode = extendFragmentCode + fragmentCode;
         const char * vShaderCode = vertexCode.c_str();
         const char * fShaderCode = fragmentCode.c_str();
-        unsigned int vertex, fragment;
+        uint32 vertex, fragment;
         int success;
         char infoLog[512];
         vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -91,7 +96,7 @@ public:
         fragmentCode = "";
     }
 
-    void use() {
+    void use() const {
         glUseProgram(ID);
     }
 
@@ -127,7 +132,7 @@ public:
         glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
 
-    void setVec4(const std::string &name, float x, float y, float z, float w) {
+    void setVec4(const std::string &name, float x, float y, float z, float w) const {
         glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
     }
 
@@ -142,6 +147,8 @@ public:
     void setMat4(const std::string &name, const glm::mat4 &mat) const {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
+};
+
 };
 
 };

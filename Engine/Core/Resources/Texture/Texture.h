@@ -3,16 +3,35 @@
 
 namespace Engine {
 
+class Texture;
+
+namespace Global{
+
+namespace Private{
+
+std::vector<Texture*> textures;
+
+};
+
+const std::vector<Texture*>& getTextures(){
+    return Private::textures;
+}
+
+};
+
 class Texture {
 private:
-    unsigned int ID;
+    uint32 ID;
     int activeUnit;
     std::string type;
     std::string path;
+    std::vector<Texture*>::iterator iterator;
 public:
     Texture() {}
     Texture(int ID) {
         this->ID = ID;
+        Global::Private::textures.push_back(this);
+        iterator = Global::Private::textures.end();
     }
 
     std::string& getPath(){
@@ -31,7 +50,7 @@ public:
         this->type = type;
     }
 
-    unsigned int& getID(){
+    uint32& getID(){
         return ID;
     }
 
@@ -55,6 +74,7 @@ public:
 
     void release(){
         glDeleteTextures(1, &ID);
+        std::erase(iterator);
     }
 };
 

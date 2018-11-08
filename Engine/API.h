@@ -6,18 +6,16 @@
 
 #include "Core/OpenGL/Buffer/Buffer.h"
 #include "Core/Window/Window.h"
-#include "Core/Resources/ResourceManager.h"
-#include "Core/Skybox/Skybox.h"
+#include "Core/Resources/ResourcesHeaders.h"
 #include "Core/Event/Event.h"
 #include "Core/Framebuffer/Framebuffer.h"
 
 namespace Engine {
 
-class API : public Window, public ResourceManager, public Event {
+class API : public Window, public Event {
 private:
-    Skybox* skybox;
-
     glm::mat4 projection;
+    
 public:
     void updatePhysics(){
         getPhysicsWorld()->stepSimulation(getDeltaTime());
@@ -57,7 +55,7 @@ public:
         glCullFace(GL_FRONT_AND_BACK);
     }
 
-    API(unsigned int width, unsigned int height, const std::string& title) {
+    API(uint32 width, uint32 height, const std::string& title) {
         createWindow(width, height, title);
 
         glEnable(GL_DEPTH_TEST);
@@ -66,14 +64,10 @@ public:
         glDepthFunc(GL_LESS);
 
         projection = glm::perspective(glm::radians(90.0f), getWidth() / getHeight(), 0.0001f, 10000000.0f);
-        setProjection(&projection);
-
-        Plate::getPlateBase()->initialize();
-
-        skybox = new Skybox();
-        skybox->setProjection(projection);
 
         createEvent("Loop");
+
+        Global::Plate::initialize();
     }
 
     API() {
