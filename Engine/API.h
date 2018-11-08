@@ -2,8 +2,9 @@
 #define ENGINE_INCLUDE
 
 #include <glad/glad.h>
-
 #include <btBulletDynamicsCommon.h>
+
+#include "Core/OpenGL/Buffer/Buffer.h"
 #include "Core/Window/Window.h"
 #include "Core/Resources/ResourceManager.h"
 #include "Core/Skybox/Skybox.h"
@@ -17,8 +18,6 @@ private:
     Skybox* skybox;
 
     glm::mat4 projection;
-
-//    ImGuiIO& imguiIO;
 public:
     void updatePhysics(){
         getPhysicsWorld()->stepSimulation(getDeltaTime());
@@ -32,26 +31,30 @@ public:
         glDisable(GL_DEPTH_TEST);
     }
 
-    void drawSkybox() {
-        skybox->setView(getCurrentCamera()->getViewMatrix());
-        skybox->draw();
-    }
-
     void draw() {
-//        ImGui::EndFrame();
-
-//        ImDrawData* drawData = ImGui::GetDrawData();
-  //      drawData->CmdLists
-
         runEvent("Loop");
         runBindings();
         swapBuffers();
-    //    ImGui::NewFrame();
-  //      imguiIO.DeltaTime = getDeltaTime();
     }
 
-    void setSkybox(unsigned int cubemap) {
-        skybox->setCubemap(cubemap);
+    void enableCulling(){
+        glEnable(GL_CULL_FACE);
+    }
+
+    void disableCulling(){
+        glDisable(GL_CULL_FACE);
+    }
+
+    void setCullingBack(){
+        glCullFace(GL_BACK);
+    }
+
+    void setCullingFront(){
+        glCullFace(GL_FRONT);
+    }
+
+    void setCullingBoth(){
+        glCullFace(GL_FRONT_AND_BACK);
     }
 
     API(unsigned int width, unsigned int height, const std::string& title) {
@@ -59,7 +62,7 @@ public:
 
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
-        //glCullFace(GL_BACK);
+        
         glDepthFunc(GL_LESS);
 
         projection = glm::perspective(glm::radians(90.0f), getWidth() / getHeight(), 0.0001f, 10000000.0f);
@@ -71,9 +74,6 @@ public:
         skybox->setProjection(projection);
 
         createEvent("Loop");
-
-//        ImGui::CreateContext();
-  //      imguiIO = ImGui::GetIO();
     }
 
     API() {

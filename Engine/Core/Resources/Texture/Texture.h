@@ -2,28 +2,62 @@
 #define ENGINE_TEXTURE_INCLUDE
 
 namespace Engine {
-struct Texture {
-    int ID;
+
+class Texture {
+private:
+    unsigned int ID;
+    int activeUnit;
     std::string type;
     std::string path;
-    int activeUnit;
-
+public:
     Texture() {}
     Texture(int ID) {
         this->ID = ID;
     }
 
-    void bind(int unit) {
-        glActiveTexture(GL_TEXTURE0 + unit);
-        activeUnit = unit;
-        glBindTexture(GL_TEXTURE_2D, ID);
-        glActiveTexture(GL_TEXTURE0);
+    std::string& getPath(){
+        return path;
+    }
+
+    void setPath(std::string& path){
+        this->path = path;
+    }
+
+    std::string& getType(){
+        return type;
+    }
+
+    void setType(std::string& type){
+        this->type = type;
+    }
+
+    unsigned int& getID(){
+        return ID;
+    }
+
+    void setActiveUnit(int activeUnit){
+        glActiveTexture(GL_TEXTURE0 + activeUnit);
+        this->activeUnit = activeUnit;
     }
 
     int getActiveUnit() {
         return activeUnit;
     }
+
+    void bind() {
+        glBindTexture(GL_TEXTURE_2D, ID);
+    }
+
+    void bind(int unit){
+        bind();
+        setActiveUnit(unit);
+    }
+
+    void release(){
+        glDeleteTextures(1, &ID);
+    }
 };
+
 };
 
 #endif // ENGINE_TEXTURE_INCLUDE
