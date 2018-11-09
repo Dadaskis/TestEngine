@@ -49,24 +49,24 @@ public:
         compile();
     }
 
-    int& getID() const {
+    const int& getID() const {
         return this->ID;
     }
 
     void setVertex(const std::string& path) {
-        vertexCode = Utilities::readWholeFile(path);
+        vertexCode = Utilities::File::readWholeFile(path);
     }
 
     void setFragment(const std::string& path) {
-        fragmentCode = Utilities::readWholeFile(path);
+        fragmentCode = Utilities::File::readWholeFile(path);
     }
 
     void vertexExtend(const std::string& path) {
-        extendVertexCode = Utilities::readWholeFile(path);
+        extendVertexCode = Utilities::File::readWholeFile(path);
     }
 
     void fragmentExtend(const std::string& path) {
-        extendFragmentCode = Utilities::readWholeFile(path);
+        extendFragmentCode = Utilities::File::readWholeFile(path);
     }
 
     void compile() {

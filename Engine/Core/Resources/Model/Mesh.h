@@ -27,10 +27,10 @@ struct Vertex {
 
 class Mesh {
 private:
-    GL::Buffer vertexData;
+    GL::ModelBuffer vertexData;
     std::vector<Vertex> vertices;
     std::vector<uint32> indices;
-    std::vector<Texture> textures;
+    std::vector<GL::Texture> textures;
 
     void setupMesh() {
         vertexData.create();
@@ -59,7 +59,7 @@ private:
 public:
     Mesh(const std::vector<Vertex>& vertices,
          const std::vector<uint32>& indices,
-         const std::vector<Texture>& textures) {
+         const std::vector<GL::Texture>& textures) {
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
@@ -68,7 +68,7 @@ public:
     }
 
     // render the mesh
-    void draw(const GL::Shader& shader) const{
+    void draw(const GL::Shader& shader) {
         uint32 diffuseNr  = 1;
         uint32 specularNr = 1;
         uint32 normalNr   = 1;
@@ -98,6 +98,10 @@ public:
     
     const std::vector<Vertex>& getVertices() const{
         return vertices;
+    }
+
+    const std::vector<uint32>& getIndices() const{
+        return indices;
     }
 
     void release(){

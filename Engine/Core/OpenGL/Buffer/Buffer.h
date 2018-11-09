@@ -33,12 +33,12 @@ public:
     }
 
     template<class Type>
-    void setData(int index, Type* data, int count){
+    void setData(int index, const Type* data, int count){
         glBindBuffer(GL_ARRAY_BUFFER, VBOs.at(index));
         glBufferData(GL_ARRAY_BUFFER, sizeof(Type) * count, data, GL_STATIC_DRAW);
     }
 
-    void setSequence(uint32* sequence, int count){
+    void setSequence(const uint32* sequence, int count){
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * count, sequence, GL_STATIC_DRAW);
     }

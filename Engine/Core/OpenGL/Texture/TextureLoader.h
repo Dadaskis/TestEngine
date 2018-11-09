@@ -1,11 +1,13 @@
-#ifndef ENGINE_TEXTURE_LOADER_INCLUDE
-#define ENGINE_TEXTURE_LOADER_INCLUDE
+#ifndef ENGINE_OPENGL_TEXTURE_LOADER_INCLUDE
+#define ENGINE_OPENGL_TEXTURE_LOADER_INCLUDE
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 namespace Engine {
+
 namespace TextureUtilities {
+
 uint32 loadTexture(const std::string& path, bool reverse = false) {
     stbi_set_flip_vertically_on_load(reverse);
 
@@ -71,7 +73,9 @@ uint32 loadCubemap(const std::vector<std::string>& faces) {
 
     return textureID;
 }
+
 };
+
 };
 
 #endif // ENGINE_TEXTURE_LOADER_INCLUDE

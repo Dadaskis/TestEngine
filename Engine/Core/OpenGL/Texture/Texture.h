@@ -3,21 +3,27 @@
 
 namespace Engine {
 
+namespace GL {
+
 class Texture;
+
+};
 
 namespace Global{
 
 namespace Private{
 
-std::vector<Texture*> textures;
+std::vector<GL::Texture*> textures;
 
 };
 
-const std::vector<Texture*>& getTextures(){
+const std::vector<GL::Texture*>& getTextures(){
     return Private::textures;
 }
 
 };
+
+namespace GL{
 
 class Texture {
 private:
@@ -30,27 +36,27 @@ public:
     Texture() {}
     Texture(int ID) {
         this->ID = ID;
-        Global::Private::textures.push_back(this);
+        Engine::Global::Private::textures.push_back(this);
         iterator = Global::Private::textures.end();
     }
 
-    std::string& getPath(){
+    const std::string& getPath() const {
         return path;
     }
 
-    void setPath(std::string& path){
+    void setPath(const std::string& path){
         this->path = path;
     }
 
-    std::string& getType(){
+    const std::string& getType() const {
         return type;
     }
 
-    void setType(std::string& type){
+    void setType(const std::string& type){
         this->type = type;
     }
 
-    uint32& getID(){
+    const uint32& getID() const {
         return ID;
     }
 
@@ -59,7 +65,7 @@ public:
         this->activeUnit = activeUnit;
     }
 
-    int getActiveUnit() {
+    int getActiveUnit() const {
         return activeUnit;
     }
 
@@ -68,14 +74,16 @@ public:
     }
 
     void bind(int unit){
-        bind();
+        glBindTexture(GL_TEXTURE_2D, ID);
         setActiveUnit(unit);
     }
 
     void release(){
         glDeleteTextures(1, &ID);
-        std::erase(iterator);
+        Global::Private::textures.erase(iterator);
     }
+};
+
 };
 
 };

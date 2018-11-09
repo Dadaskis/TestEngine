@@ -8,6 +8,7 @@
 namespace Engine {
 
 namespace Utilities {
+    
 std::vector<std::string> splitString(const std::string& string, const std::string& splitter) {
     std::regex regex(splitter);
     std::sregex_token_iterator first{string.begin(), string.end(), regex, -1}, last;
@@ -30,6 +31,8 @@ Type stringToNumber(const std::string& string) {
     return number;
 }
 
+namespace File{
+
 std::string readWholeFile(const std::string& path) {
     std::ifstream file;
     file.exceptions (std::ifstream::failbit | std::ifstream::badbit);
@@ -44,13 +47,27 @@ std::string readWholeFile(const std::string& path) {
     }
 }
 
-btVector3 convertGlmVec3(const glm::vec3& vector){
-    return btVector3(vector.x, vector.y, vector.z);
+};
+
+namespace Vector{
+
+btVector3 toPhysics(glm::vec3& vec){
+    return btVector3(vec.x, vec.y, vec.z);
 }
 
-glm::vec3 convertBtVector3(const btVector3& btVector){
-    return glm::vec3(btVector.x(), btVector.y(), btVector.z());
+const btVector3 toPhysics(const glm::vec3& vec){
+    return btVector3(vec.x, vec.y, vec.z);
 }
+
+glm::vec3 toLinearMath(btVector3& vec){
+    return glm::vec3(vec.x(), vec.y(), vec.z());
+}
+
+const glm::vec3 toLinearMath(const btVector3& vec){
+    return glm::vec3(vec.x(), vec.y(), vec.z());
+}
+
+};
 
 };
 
