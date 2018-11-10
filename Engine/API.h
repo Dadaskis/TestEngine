@@ -17,6 +17,7 @@
 #include "Core/Utilities/Keys.h"
 #include "Core/OpenGL/GLHeaders.h"
 #include "Core/Window/Window.h"
+#include "Core/Physics/Integration.h"
 #include "Core/Resources/ResourcesHeaders.h"
 #include "Core/Event/Event.h"
 #include "Core/Framebuffer/Framebuffer.h"
@@ -25,11 +26,19 @@ namespace Engine {
 
 class API : public Window, public Event {
 private:
-    glm::mat4 projection;
-    
+    btDiscreteDynamicsWorld* physicsWorld;
+    float physicsFramerate;    
 public:
+    void setPhysicsFramerate(float framerate){
+        physicsFramerate = framerate;
+    }
+
+    const float& getPhysicsFramerate(){
+        return physicsFramerate;
+    }
+
     void updatePhysics(){
-        getPhysicsWorld()->stepSimulation(getDeltaTime());
+        physicsWorld->stepSimulation(physicsFramerate);
     }
 
     void enableDepthTest() {
@@ -74,11 +83,15 @@ public:
         
         glDepthFunc(GL_LESS);
 
-        projection = glm::perspective(glm::radians(90.0f), getWidth() / getHeight(), 0.0001f, 10000000.0f);
-
         createEvent("Loop");
 
         Global::Plate::initialize();
+
+        //btDispatcher* dispatcher = btCollisionDispatcher();
+        //btBroadphase* broadphase = btDbvt
+        //physicsWorld = new btDiscreteDynamicsWorld(dispatcher, );
+        //Engine::Physics::Dispatcher::Base::registerCollisionAlgorithm();
+        //Dispatcher::registerCollisionAlgorithm
     }
 
     API() {
