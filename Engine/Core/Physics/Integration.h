@@ -7,18 +7,17 @@ namespace Physics{
 
 namespace World{
 
-using Discrete = btDiscreteDynamicWorld; 
-using Simple = btSimpleDynamicWorld;
+using Discrete = btDiscreteDynamicsWorld; 
+using Simple = btSimpleDynamicsWorld;
 using Base = btDynamicsWorld;
 
 };
 
 namespace Broadphase{
 
-using Base = btBroadphase;
+using Base = btBroadphaseInterface;
 using DBVT = btDbvtBroadphase;
 using AxisSweep = btAxisSweep3;
-using 32bitAxisSweep = bt32BitAxisSweep3;
 using Bruteforce = btSimpleBroadphase;
 
 };
@@ -74,6 +73,8 @@ using Default = btDefaultMotionState;
   
 };
   
+};
+
 };
 
 #endif

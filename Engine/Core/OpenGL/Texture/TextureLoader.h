@@ -1,17 +1,14 @@
 #ifndef ENGINE_OPENGL_TEXTURE_LOADER_INCLUDE
 #define ENGINE_OPENGL_TEXTURE_LOADER_INCLUDE
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
 namespace Engine {
 
 namespace TextureUtilities {
 
-uint32 loadTexture(const std::string& path, bool reverse = false) {
+unsigned int loadTexture(const std::string& path, bool reverse = false) {
     stbi_set_flip_vertically_on_load(reverse);
 
-    uint32 textureID;
+    unsigned int textureID;
     glGenTextures(1, &textureID);
 
     int width, height, nrComponents;
@@ -46,13 +43,13 @@ uint32 loadTexture(const std::string& path, bool reverse = false) {
 
 
 
-uint32 loadCubemap(const std::vector<std::string>& faces) {
-    uint32 textureID;
+unsigned int loadCubemap(const std::vector<std::string>& faces) {
+    unsigned int textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
     int width, height, nrChannels;
-    for (uint32 i = 0; i < faces.size(); i++) {
+    for (unsigned int i = 0; i < faces.size(); i++) {
         unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
         if (data) {
             glTexImage2D(

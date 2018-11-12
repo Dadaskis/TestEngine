@@ -1,13 +1,23 @@
 #ifndef ENGINE_CAMERA_INCLUDE
 #define ENGINE_CAMERA_INCLUDE
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include <vector>
-
 namespace Engine {
+
+class Camera;
+
+namespace Global {
+
+namespace Private{
+
+std::vector<Camera*> cameras;
+
+};
+
+const std::vector<Camera*> getCameras(){
+
+}
+
+};
 
 enum CameraMove : int {
     CAMERA_MOVE_FORWARD,
@@ -19,15 +29,17 @@ enum CameraMove : int {
 };
 
 class Camera {
-private:
-    static constexpr float YAW         = -90.0f;
-    static constexpr float PITCH       =  0.0f;
-    static constexpr float SPEED       =  2.5f;
-    static constexpr float SENSITIVITY =  0.1f;
-    static constexpr float MAX_FOV     =  360.0f;
+   private:
+    std::vector<Camera*>::iterator iterator;
 
-    float MovementSpeed;
-    float MouseSensitivity;
+    static constexpr float YAW = -90.0f;
+    static constexpr float PITCH = 0.0f;
+    static constexpr float SPEED = 2.5f;
+    static constexpr float SENSITIVITY = 0.1f;
+    static constexpr float MAX_FOV = 360.0f;
+
+    float movementSpeed;
+    float mouseSensitivity;
     float fov;
 
     glm::vec3 position;
@@ -48,18 +60,24 @@ private:
         this->front = glm::normalize(front);
 
         right = glm::normalize(glm::cross(this->front, worldUp));
-        up    = glm::normalize(glm::cross(right, this->front));
+        up = glm::normalize(glm::cross(right, this->front));
+    }
+    
+    void globalAdd(){
+        Global::Private::cameras.push_back(this);
+        iterator = Global::Private::cameras.end();
     }
 
-public:
+   public:
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
            glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
            float yaw = YAW,
            float pitch = PITCH)
-        : front(glm::vec3(0.0f, 0.0f, -1.0f))
-        , MovementSpeed(SPEED)
-        , MouseSensitivity(SENSITIVITY)
-        , fov(MAX_FOV) {
+        : front(glm::vec3(0.0f, 0.0f, -1.0f)),
+          movementSpeed(SPEED),
+          mouseSensitivity(SENSITIVITY),
+          fov(MAX_FOV) {
+        globalAdd();
         this->position = position;
         worldUp = up;
         this->yaw = yaw;
@@ -67,13 +85,19 @@ public:
         updateCameraVectors();
     }
 
-    Camera(float posX, float posY, float posZ,
-           float upX, float upY, float upZ,
-           float yaw, float pitch)
-        : front(glm::vec3(0.0f, 0.0f, -1.0f))
-        , MovementSpeed(SPEED)
-        , MouseSensitivity(SENSITIVITY)
-        , fov(MAX_FOV) {
+    Camera(float posX,
+           float posY,
+           float posZ,
+           float upX,
+           float upY,
+           float upZ,
+           float yaw,
+           float pitch)
+        : front(glm::vec3(0.0f, 0.0f, -1.0f)),
+          movementSpeed(SPEED),
+          mouseSensitivity(SENSITIVITY),
+          fov(MAX_FOV) {
+        globalAdd();
         position = glm::vec3(posX, posY, posZ);
         worldUp = glm::vec3(upX, upY, upZ);
         this->yaw = yaw;
@@ -86,7 +110,7 @@ public:
     }
 
     void processKeyboard(int direction, float deltaTime) {
-        float velocity = MovementSpeed * deltaTime;
+        float velocity = movementSpeed * deltaTime;
         if (direction == CAMERA_MOVE_FORWARD)
             position += front * velocity;
         if (direction == CAMERA_MOVE_BACKWARD)
@@ -101,7 +125,7 @@ public:
             position -= up * velocity;
     }
 
-    void processMouseMovement(float X, float Y, GLboolean constrainPitch = true) {
+    void processMouseMovement(float X, float Y, bool constrainPitch = true) {
         float xoffset, yoffset;
 
         xoffset = X - lastMouseX;
@@ -110,10 +134,10 @@ public:
         lastMouseX = X;
         lastMouseY = Y;
 
-        xoffset *= MouseSensitivity;
-        yoffset *= MouseSensitivity;
+        xoffset *= mouseSensitivity;
+        yoffset *= mouseSensitivity;
 
-        yaw   += xoffset;
+        yaw += xoffset;
         pitch += yoffset;
 
         if (constrainPitch) {
@@ -126,52 +150,31 @@ public:
         updateCameraVectors();
     }
 
-    void setFOV(float fov) {
-        this->fov = fov;
-    }
+    void setFOV(float fov) { this->fov = fov; }
 
-    void processMouseScroll(float yoffset) {
-        if (fov >= 1.0f && fov <= MAX_FOV)
-            fov -= yoffset;
-        if (fov <= 1.0f)
-            fov = 1.0f;
-        if (fov >= MAX_FOV)
-            fov = MAX_FOV;
-    }
+    const float getFOV() const { return this->fov; }
 
-    void setSpeed(float speed) {
-        MovementSpeed = speed;
-    }
+    void setSpeed(float speed) { movementSpeed = speed; }
 
-    float getSpeed() {
-        return MovementSpeed;
-    }
+    const float& getSpeed() const { return movementSpeed; }
 
-    void setSensitivity(float sense) {
-        MouseSensitivity = sense;
-    }
+    void setSensitivity(float sense) { mouseSensitivity = sense; }
 
-    float getSensitivity() {
-        return MouseSensitivity;
-    }
+    const float& getSensitivity() const { return mouseSensitivity; }
 
-    void setPosition(const glm::vec3& position) {
-        this->position = position;
-    }
+    void setPosition(const glm::vec3& position) { this->position = position; }
 
-    glm::vec3 getPosition() {
-        return position;
-    }
+    const glm::vec3& getPosition() const { return position; }
 
-    void setFront(const glm::vec3& front) {
-        this->front = front;
-    }
+    void setFront(const glm::vec3& front) { this->front = front; }
 
-    glm::vec3 getFront() {
-        return front;
+    glm::vec3 getFront() { return front; }
+
+    ~Camera(){
+        Global::Private::cameras.erase(iterator);
     }
 };
 
-};
+};  // namespace Engine
 
-#endif // ENGINE_CAMERA_INCLUDE
+#endif  // ENGINE_CAMERA_INCLUDE

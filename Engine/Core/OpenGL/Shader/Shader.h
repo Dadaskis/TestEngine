@@ -1,15 +1,6 @@
 #ifndef ENGINE_OPENGL_SHADER_INCLUDE
 #define ENGINE_OPENGL_SHADER_INCLUDE
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include "../../Utilities/Utilities.h"
-
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
 namespace Engine {
 
 namespace GL {
@@ -17,11 +8,11 @@ namespace GL {
 class Shader {
 private:
     std::string vertexCode, fragmentCode, extendVertexCode = "", extendFragmentCode = "";
-    uint32 ID;
+    unsigned int ID;
 
     void checkCompileErrors(GLuint shader, const std::string& type) const {
-        GLint success;
-        GLchar infoLog[1024];
+        int success;
+        char infoLog[1024];
         if(type != "PROGRAM") {
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
             if(!success) {
@@ -49,10 +40,6 @@ public:
         compile();
     }
 
-    const int& getID() const {
-        return this->ID;
-    }
-
     void setVertex(const std::string& path) {
         vertexCode = Utilities::File::readWholeFile(path);
     }
@@ -74,7 +61,7 @@ public:
         fragmentCode = extendFragmentCode + fragmentCode;
         const char * vShaderCode = vertexCode.c_str();
         const char * fShaderCode = fragmentCode.c_str();
-        uint32 vertex, fragment;
+        unsigned int vertex, fragment;
         int success;
         char infoLog[512];
         vertex = glCreateShader(GL_VERTEX_SHADER);

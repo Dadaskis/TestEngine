@@ -1,20 +1,6 @@
 #ifndef ENGINE_MESH_INCLUDE
 #define ENGINE_MESH_INCLUDE
 
-#include <glad/glad.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include "../../OpenGL/Shader/Shader.h"
-#include "../Texture/Texture.h"
-
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <vector>
-
 namespace Engine {
 
 struct Vertex {
@@ -25,40 +11,40 @@ struct Vertex {
     glm::vec3 bitangent;
 };
 
-class Mesh {
-private:
-    GL::ModelBuffer vertexData;
+class Mesh : public GL::ModelBuffer {
+   private:
     std::vector<Vertex> vertices;
-    std::vector<uint32> indices;
+    std::vector<unsigned int> indices;
     std::vector<GL::Texture> textures;
 
     void setupMesh() {
-        vertexData.create();
+        create();
 
-        vertexData.bind();
-        
-        vertexData.setData<Vertex>(0, &vertices[0], vertices.size());
+        bind();
 
-        vertexData.setSequence(&indices[0], indices.size()); 
-        
-        vertexData.enableAttribute(0);
-        vertexData.setAttribute<float, Vertex>(0, 3, offsetof(Vertex, position));
-        
-        vertexData.enableAttribute(1);
-        vertexData.setAttribute<float, Vertex>(1, 3, offsetof(Vertex, normal));
-        
-        vertexData.enableAttribute(2);
-        vertexData.setAttribute<float, Vertex>(2, 2, offsetof(Vertex, texCoords));
-        
-        vertexData.enableAttribute(3);
-        vertexData.setAttribute<float, Vertex>(3, 3, offsetof(Vertex, tangent));
+        std::vector<glm::vec3> positions;
+        std::vector<glm::vec3> normals;
+        std::vector<glm::vec2> texCoords;
+        std::vector<glm::vec3> tangents;
 
-        vertexData.unbind();
+        for(auto& vertex : vertices){
+            positions.push_back(vertex.position);
+            normals.push_back(vertex.normal);
+            texCoords.push_back(vertex.texCoords);
+            tangents.push_back(vertex.tangent);
+        }
+
+        setPositions(positions);
+        setNormals(normals);
+        setTexCoords(texCoords);
+        setTangents(tangents);
+
+        unbind();
     }
 
-public:
+   public:
     Mesh(const std::vector<Vertex>& vertices,
-         const std::vector<uint32>& indices,
+         const std::vector<unsigned int>& indices,
          const std::vector<GL::Texture>& textures) {
         this->vertices = vertices;
         this->indices = indices;
@@ -67,47 +53,37 @@ public:
         setupMesh();
     }
 
-    // render the mesh
-    void draw(const GL::Shader& shader) {
-        uint32 diffuseNr  = 1;
-        uint32 specularNr = 1;
-        uint32 normalNr   = 1;
-        uint32 heightNr   = 1;
-        for(uint32 i = 0; i < textures.size(); i++) {
+    void bindTextures(const GL::Shader& shader){
+        unsigned int diffuseNr = 1;
+        unsigned int specularNr = 1;
+        unsigned int normalNr = 1;
+        unsigned int heightNr = 1;
+        for (unsigned int i = 0; i < textures.size(); i++) {
             textures[i].setActiveUnit(i);
             // retrieve texture number (the N in diffuse_textureN)
             std::string number;
             std::string name = textures[i].getType();
-            if(name == "texture_diffuse")
+            if (name == "texture_diffuse")
                 number = std::to_string(diffuseNr++);
-            else if(name == "texture_specular")
+            else if (name == "texture_specular")
                 number = std::to_string(specularNr++);
-            else if(name == "texture_normal")
+            else if (name == "texture_normal")
                 number = std::to_string(normalNr++);
-            else if(name == "texture_height")
+            else if (name == "texture_height")
                 number = std::to_string(heightNr++);
 
             shader.setInt((name + number), i);
-            
+
             textures[i].bind();
         }
-
-        vertexData.bind();
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-    }
-    
-    const std::vector<Vertex>& getVertices() const{
-        return vertices;
     }
 
-    const std::vector<uint32>& getIndices() const{
-        return indices;
-    }
+    const std::vector<Vertex>& getVertices() const { return vertices; }
 
-    void release(){
-        vertexData.release();
-    }
+    const std::vector<unsigned int>& getIndices() const { return indices; }
+
+    void release() { release(); }
 };
 
-};
+};  // namespace Engine
 #endif

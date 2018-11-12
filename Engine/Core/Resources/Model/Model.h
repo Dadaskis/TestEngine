@@ -1,38 +1,28 @@
 #ifndef ENGINE_MODEL_INCLUDE
 #define ENGINE_MODEL_INCLUDE
 
-#include <glad/glad.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <stb_image.h>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
-#include "ModelBuffer.h"
 #include "Mesh.h"
 
 namespace Engine {
 
 class Model;
 
-namespace Global{
+namespace Global {
 
-namespace Private{
+namespace Private {
 
 std::vector<Model*> models;
 
 };
 
-const std::vector<Model*> getModels(){
+const std::vector<Model*> getModels() {
     return Private::models;
 }
 
-};
+};  // namespace Global
 
 class Model {
-private:
+   private:
     btDiscreteDynamicsWorld* physicsWorld;
     btTriangleMesh* collider;
     std::vector<GL::Texture> textures;
@@ -42,34 +32,37 @@ private:
 
     void loadModel(const std::string& path) {
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-        if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) { // if is Not Zero
-            std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << "\n";
+        const aiScene* scene =
+            importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |
+                                        aiProcess_CalcTangentSpace);
+        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
+            !scene->mRootNode) {  // if is Not Zero
+            std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString()
+                      << "\n";
             return;
         }
 
         processNode(scene->mRootNode, scene);
     }
 
-
-    void processNode(aiNode *node, const aiScene *scene) {
-        for(uint32 i = 0; i < node->mNumMeshes; i++) {
+    void processNode(aiNode* node, const aiScene* scene) {
+        for (unsigned int i = 0; i < node->mNumMeshes; i++) {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
             meshes.push_back(processMesh(mesh, scene));
         }
-        for(uint32 i = 0; i < node->mNumChildren; i++) {
+        for (unsigned int i = 0; i < node->mNumChildren; i++) {
             processNode(node->mChildren[i], scene);
         }
     }
 
-    Mesh processMesh(aiMesh *mesh, const aiScene *scene) {
+    Mesh processMesh(aiMesh* mesh, const aiScene* scene) {
         std::vector<Vertex> vertices;
-        std::vector<uint32> indices;
+        std::vector<unsigned int> indices;
         std::vector<GL::Texture> textures;
         std::vector<float> vertexVectors;
 
-        for(uint32 i = 0; i < mesh->mNumVertices; i++) {
+        for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
             Vertex vertex;
             glm::vec3 vector;
 
@@ -83,7 +76,7 @@ private:
             vector.z = mesh->mNormals[i].z;
             vertex.normal = vector;
 
-            if(mesh->mTextureCoords[0]) {
+            if (mesh->mTextureCoords[0]) {
                 glm::vec2 vec;
                 vec.x = mesh->mTextureCoords[0][i].x;
                 vec.y = mesh->mTextureCoords[0][i].y;
@@ -103,10 +96,10 @@ private:
             vertices.push_back(vertex);
         }
 
-        for(uint32 i = 0; i < mesh->mNumFaces; i++) {
+        for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
             aiFace face = mesh->mFaces[i];
 
-            for(uint32 j = 0; j < face.mNumIndices; j++)
+            for (unsigned int j = 0; j < face.mNumIndices; j++)
                 indices.push_back(face.mIndices[j]);
         }
 
@@ -115,36 +108,44 @@ private:
         // specular: texture_specularN
         // normal: texture_normalN
 
-        std::vector<GL::Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        std::vector<GL::Texture> diffuseMaps = loadMaterialTextures(
+            material, aiTextureType_DIFFUSE, "texture_diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-        std::vector<GL::Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+        std::vector<GL::Texture> specularMaps = loadMaterialTextures(
+            material, aiTextureType_SPECULAR, "texture_specular");
+        textures.insert(textures.end(), specularMaps.begin(),
+                        specularMaps.end());
 
-        std::vector<GL::Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+        std::vector<GL::Texture> normalMaps = loadMaterialTextures(
+            material, aiTextureType_HEIGHT, "texture_normal");
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-        std::vector<GL::Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+        std::vector<GL::Texture> heightMaps = loadMaterialTextures(
+            material, aiTextureType_AMBIENT, "texture_height");
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
         return Mesh(vertices, indices, textures);
     }
 
-    std::vector<GL::Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, const std::string& typeName) {
+    std::vector<GL::Texture> loadMaterialTextures(aiMaterial* mat,
+                                                  aiTextureType type,
+                                                  const std::string& typeName) {
         std::vector<GL::Texture> meshTextures;
-        for(uint32 i = 0; i < mat->GetTextureCount(type); i++) {
+        for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
             aiString str;
             mat->GetTexture(type, i, &str);
 
             bool skip = false;
-            for(uint32 j = 0; j < textures.size(); j++) {
-                if(std::strcmp(textures[j].getPath().c_str(), str.C_Str()) == 0) {
+            for (unsigned int j = 0; j < textures.size(); j++) {
+                if (std::strcmp(textures[j].getPath().c_str(), str.C_Str()) ==
+                    0) {
                     textures.push_back(textures[j]);
                     skip = true;
                     break;
                 }
             }
-            if(!skip) {
+            if (!skip) {
                 GL::Texture texture(TextureUtilities::loadTexture(str.C_Str()));
                 texture.setType(typeName);
                 texture.setPath(str.C_Str());
@@ -154,26 +155,31 @@ private:
         }
         return meshTextures;
     }
-public:
-    Model(btDiscreteDynamicsWorld* physicsWorld, const std::string& path, bool gamma = false)
+
+   public:
+    Model(btDiscreteDynamicsWorld* physicsWorld,
+          const std::string& path,
+          bool gamma = false)
         : gammaCorrection(gamma) {
         this->physicsWorld = physicsWorld;
         loadModel(path);
 
         collider = new btTriangleMesh();
-        for(int meshIndex = 0; meshIndex < meshes.size(); meshIndex++){
+        for (int meshIndex = 0; meshIndex < meshes.size(); meshIndex++) {
             Mesh& mesh = meshes[meshIndex];
             const std::vector<Vertex>& vertices = mesh.getVertices();
-            const std::vector<uint32>& indices = mesh.getIndices();
-            for(int indicesIndex = 0; indicesIndex < indices.size() - 2; indicesIndex += 3){
+            const std::vector<unsigned int>& indices = mesh.getIndices();
+            for (int indicesIndex = 0; indicesIndex < indices.size() - 2;
+                 indicesIndex += 3) {
                 collider->addTriangle(
-                    Utilities::Vector::toPhysics(vertices.at(indices.at(indicesIndex)).position),
-                    Utilities::Vector::toPhysics(vertices.at(indices.at(indicesIndex + 1)).position),
-                    Utilities::Vector::toPhysics(vertices.at(indices.at(indicesIndex + 2)).position),
-                    true
-                );
+                    Utilities::Vector::toPhysics(
+                        vertices.at(indices.at(indicesIndex)).position),
+                    Utilities::Vector::toPhysics(
+                        vertices.at(indices.at(indicesIndex + 1)).position),
+                    Utilities::Vector::toPhysics(
+                        vertices.at(indices.at(indicesIndex + 2)).position),
+                    true);
             }
-
         }
     }
 
@@ -181,50 +187,50 @@ public:
         return this->textures;
     }
 
-    void setTextures(const std::vector<GL::Texture>& textures){
+    void setTextures(const std::vector<GL::Texture>& textures) {
         this->textures = textures;
     }
 
-    const std::vector<Mesh>& getMeshes() const {
-        return this->meshes;
-    }
+    const std::vector<Mesh>& getMeshes() const { return this->meshes; }
 
-    const std::string& getDirectory() const {
-        return this->directory;
-    }
+    const std::string& getDirectory() const { return this->directory; }
 
-    void setDirectory(const std::string& directory){
+    void setDirectory(const std::string& directory) {
         this->directory = directory;
     }
 
-    const bool& getGammaCorrection() const{
-        return this->gammaCorrection;
-    }
+    const bool& getGammaCorrection() const { return this->gammaCorrection; }
 
-    void setGammaCorrection(const bool& gammaCorrection){
+    void setGammaCorrection(const bool& gammaCorrection) {
         this->gammaCorrection = gammaCorrection;
     }
 
-    btGImpactMeshShape* getCollision(){
+    btGImpactMeshShape* getCollision() {
         btGImpactMeshShape* collision = new btGImpactMeshShape(collider);
         collision->updateBound();
 
         return collision;
     }
 
-    btBvhTriangleMeshShape* getStaticCollision(){
-        btBvhTriangleMeshShape* collision = new btBvhTriangleMeshShape(collider, false);
+    btBvhTriangleMeshShape* getStaticCollision() {
+        btBvhTriangleMeshShape* collision =
+            new btBvhTriangleMeshShape(collider, false);
 
         return collision;
     }
 
-    void draw(const GL::Shader& shader) {
-        shader.use();
-        for(auto mesh = meshes.begin(); mesh != meshes.end(); mesh++){
-            mesh->draw(shader);
+    void bindTextures(const GL::Shader& shader){
+        for(auto& mesh : meshes){
+            mesh.bindTextures(shader);
+        }
+    }
+
+    void draw() {
+        for (auto& mesh : meshes) {
+            mesh.draw();
         }
     }
 };
 
-};
+};  // namespace Engine
 #endif

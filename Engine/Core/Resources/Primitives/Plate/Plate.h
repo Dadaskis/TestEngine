@@ -1,72 +1,59 @@
 #ifndef ENGINE_PRIMITIVES_PLATE_INCLUDE
 #define ENGINE_PRIMITIVES_PLATE_INCLUDE
 
-#include <glm/gtc/matrix_transform.hpp>
-
 namespace Engine {
 
-namespace Global{
+class Plate;
 
-namespace Plate{
+namespace Global {
 
-GL::Buffer base;
+namespace Private{
 
-void initialize(){
-    base.create(3);
-    
-    float pos[] = {
-        -1.0, -1.0, 0,
-        1.0, -1.0, 0,
-        -1.0, 1.0, 0,
-        1.0, 1.0, 0
-    };
+std::vector<Plate*> plates;
 
-    float normals[] = {
-        0.0, 0.0, 0.0,
-        0.0, 0.0, 0.0,
-        0.0, 0.0, 0.0,
-        0.0, 0.0, 0.0
-    };
+};
 
-    float texCoords[] = {
-        0.0, 1.0,
-        1.0, 1.0,
-        0.0, 0.0,
-        1.0, 0.0
-    };
-
-    uint32 sequence[] = {
-        0, 2, 3,
-        0, 1, 3
-    };
-
-    base.setData<float>(0, &pos[0], 3 * 4);
-    base.setData<float>(1, &normals[0], 3 * 4);
-    base.setData<float>(2, &texCoords[0], 2 * 4);
-    base.setSequence(&sequence[0], 3 * 2);
-    
-    base.enableAttribute(0);
-    base.setAttribute<glm::vec3, float>(0, 3 * 4);
-
-    base.enableAttribute(1);
-    base.setAttribute<glm::vec3, float>(1, 3 * 4);
-
-    base.enableAttribute(2);
-    base.setAttribute<glm::vec2, float>(2, 2 * 4);
-
-    base.unbind();
+const std::vector<Plate*>& getPlates(){
+    return Private::plates;
 }
 
-};
+namespace Plate {
 
-};
+GL::ModelBuffer* base;
 
-class Plate{
-private:
+void initialize() {
+    base = new GL::ModelBuffer();
+    base->bind();
+
+    std::vector<glm::vec3> pos = {glm::vec3(-1.0, -1.0, 0), glm::vec3(1.0, -1.0, 0), glm::vec3(-1.0, 1.0, 0), glm::vec3(1.0, 1.0, 0)};
+
+    std::vector<glm::vec3> normals(4, glm::vec3(0));
+
+    std::vector<glm::vec2> texCoords = {glm::vec2(0.0, 1.0), glm::vec2(1.0, 1.0), glm::vec2(0.0, 0.0), glm::vec2(1.0, 0.0)};
+
+    std::vector<unsigned int> indices = {0, 2, 3, 0, 1, 3};
+
+    base->setPositions(pos);
+    base->setNormals(normals);
+    base->setTexCoords(texCoords);
+    base->setIndices(indices);
+    
+    base->unbind();
+}
+
+};  // namespace Plate
+
+};  // namespace Global
+
+class Plate {
+   private:
     GL::Buffer* vertexData;
-public:
-    Plate(){
-        vertexData = &Global::Plate::base;
+    std::vector<Plate*>::iterator iterator;
+   public:
+    Plate() {
+        Global::Private::plates.push_back(this);
+        iterator = Global::Private::plates.end();
+        vertexData = Global::Plate::base; 
     }
 
     void draw(const GL::Shader& shader) const {
@@ -77,6 +64,6 @@ public:
     }
 };
 
-};
+};  // namespace Engine
 
-#endif // ENGINE_PRIMITIVES_PLATE_INCLUDE
+#endif  // ENGINE_PRIMITIVES_PLATE_INCLUDE

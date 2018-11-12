@@ -27,7 +27,7 @@ namespace GL{
 
 class Texture {
 private:
-    uint32 ID;
+    unsigned int ID;
     int activeUnit;
     std::string type;
     std::string path;
@@ -56,7 +56,7 @@ public:
         this->type = type;
     }
 
-    const uint32& getID() const {
+    const unsigned int& getID() const {
         return ID;
     }
 
