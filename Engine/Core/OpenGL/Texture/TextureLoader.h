@@ -31,7 +31,6 @@ unsigned int loadTexture(const std::string& path, bool reverse = false) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-
         stbi_image_free(data);
     } else {
         std::cout << "Texture failed to load at path: " << path << std::endl;
@@ -40,8 +39,6 @@ unsigned int loadTexture(const std::string& path, bool reverse = false) {
 
     return textureID;
 }
-
-
 
 unsigned int loadCubemap(const std::vector<std::string>& faces) {
     unsigned int textureID;

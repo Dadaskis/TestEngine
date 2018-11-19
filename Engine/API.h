@@ -20,6 +20,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <thread>
+#include <chrono>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -65,6 +67,10 @@ class API : public Window{
     void setCullingFront() { glCullFace(GL_FRONT); }
 
     void setCullingBoth() { glCullFace(GL_FRONT_AND_BACK); }
+
+    void enableBlending() { glEnable(GL_BLEND); }
+
+    void disableBlending() { glDisable(GL_BLEND); }
 
     API(unsigned int width, unsigned int height, const std::string& title) {
         glEnable(GL_DEPTH_TEST);

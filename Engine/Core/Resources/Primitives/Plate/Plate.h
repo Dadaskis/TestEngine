@@ -7,16 +7,6 @@ class Plate;
 
 namespace Global {
 
-namespace Private{
-
-std::vector<Plate*> plates;
-
-};
-
-const std::vector<Plate*>& getPlates(){
-    return Private::plates;
-}
-
 namespace Plate {
 
 GL::ModelBuffer* base;
@@ -37,7 +27,7 @@ void initialize() {
     base->setNormals(normals);
     base->setTexCoords(texCoords);
     base->setIndices(indices);
-    
+
     base->unbind();
 }
 
@@ -45,21 +35,17 @@ void initialize() {
 
 };  // namespace Global
 
-class Plate {
+class Plate : public Interfaces::Drawable{
    private:
     GL::Buffer* vertexData;
-    std::vector<Plate*>::iterator iterator;
    public:
     Plate() {
-        Global::Private::plates.push_back(this);
-        iterator = Global::Private::plates.end();
         vertexData = Global::Plate::base; 
     }
 
-    void draw(const GL::Shader& shader) const {
-        shader.use();
+    void draw() {
         vertexData->bind();
-        glDrawElements(GL_TRIANGLES, 3 * 2, GL_UNSIGNED_INT, NULL);
+        vertexData->draw();
         vertexData->unbind();
     }
 };

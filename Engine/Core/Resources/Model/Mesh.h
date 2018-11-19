@@ -18,8 +18,6 @@ class Mesh : public GL::ModelBuffer {
     std::vector<GL::Texture> textures;
 
     void setupMesh() {
-        create();
-
         bind();
 
         std::vector<glm::vec3> positions;
@@ -38,6 +36,7 @@ class Mesh : public GL::ModelBuffer {
         setNormals(normals);
         setTexCoords(texCoords);
         setTangents(tangents);
+        setIndices(indices);
 
         unbind();
     }
@@ -53,13 +52,13 @@ class Mesh : public GL::ModelBuffer {
         setupMesh();
     }
 
-    void bindTextures(const GL::Shader& shader){
+    void bindTextures(const GL::Shader& shader) const{
         unsigned int diffuseNr = 1;
         unsigned int specularNr = 1;
         unsigned int normalNr = 1;
         unsigned int heightNr = 1;
         for (unsigned int i = 0; i < textures.size(); i++) {
-            textures[i].setActiveUnit(i);
+            textures[i].bind(i);
             // retrieve texture number (the N in diffuse_textureN)
             std::string number;
             std::string name = textures[i].getType();
@@ -71,18 +70,13 @@ class Mesh : public GL::ModelBuffer {
                 number = std::to_string(normalNr++);
             else if (name == "texture_height")
                 number = std::to_string(heightNr++);
-
             shader.setInt((name + number), i);
-
-            textures[i].bind();
         }
     }
 
     const std::vector<Vertex>& getVertices() const { return vertices; }
 
     const std::vector<unsigned int>& getIndices() const { return indices; }
-
-    void release() { release(); }
 };
 
 };  // namespace Engine

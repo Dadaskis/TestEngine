@@ -7,17 +7,16 @@ class Camera;
 
 namespace Global {
 
-namespace Private{
+namespace Private {
 
 std::vector<Camera*> cameras;
-
 };
 
-const std::vector<Camera*> getCameras(){
-
+const std::vector<Camera*>& getCameras() {
+    return Private::cameras;
 }
 
-};
+};  // namespace Global
 
 enum CameraMove : int {
     CAMERA_MOVE_FORWARD,
@@ -62,8 +61,8 @@ class Camera {
         right = glm::normalize(glm::cross(this->front, worldUp));
         up = glm::normalize(glm::cross(right, this->front));
     }
-    
-    void globalAdd(){
+
+    void globalAdd() {
         Global::Private::cameras.push_back(this);
         iterator = Global::Private::cameras.end();
     }
@@ -170,9 +169,7 @@ class Camera {
 
     glm::vec3 getFront() { return front; }
 
-    ~Camera(){
-        Global::Private::cameras.erase(iterator);
-    }
+    ~Camera() { Global::Private::cameras.erase(iterator); }
 };
 
 };  // namespace Engine

@@ -25,17 +25,17 @@ namespace Interfaces {
 
 class Drawable {
    private:
-    std::vector<Drawable*>::iterator iterator;
+    std::vector<Drawable*>::iterator drawableIterator;
 
    public:
     Drawable() {
         Global::Private::drawables.push_back(this);
-        iterator = Global::Private::drawables.end();
+        drawableIterator = Global::Private::drawables.end();
     }
 
     virtual void draw() = 0;
 
-    ~Drawable() { Global::Private::drawables.erase(iterator); }
+    ~Drawable() { Global::Private::drawables.erase(drawableIterator); }
 };
 
 };  // namespace Interfaces

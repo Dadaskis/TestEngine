@@ -34,18 +34,22 @@ private:
     std::vector<Texture*>::iterator iterator;
 public:
     Texture() {}
+    
     Texture(int ID) {
         this->ID = ID;
         Engine::Global::Private::textures.push_back(this);
         iterator = Global::Private::textures.end();
     }
 
-    const std::string& getPath() const {
-        return path;
+    Texture(const std::string& path){
+        this->ID = TextureUtilities::loadTexture(path);
+        this->path = path;
+        Engine::Global::Private::textures.push_back(this);
+        iterator = Global::Private::textures.end();
     }
 
-    void setPath(const std::string& path){
-        this->path = path;
+    const std::string& getPath() const {
+        return path;
     }
 
     const std::string& getType() const {
@@ -56,26 +60,30 @@ public:
         this->type = type;
     }
 
-    const unsigned int& getID() const {
+    const unsigned int getID() const {
         return ID;
     }
 
-    void setActiveUnit(int activeUnit){
+    void setActiveUnit(int activeUnit) {
         glActiveTexture(GL_TEXTURE0 + activeUnit);
         this->activeUnit = activeUnit;
+    }
+
+    void setActiveUnit(int activeUnit) const {
+        glActiveTexture(GL_TEXTURE0 + activeUnit);
     }
 
     int getActiveUnit() const {
         return activeUnit;
     }
 
-    void bind() {
+    void bind() const {
         glBindTexture(GL_TEXTURE_2D, ID);
     }
 
-    void bind(int unit){
-        glBindTexture(GL_TEXTURE_2D, ID);
+    void bind(int unit) const {
         setActiveUnit(unit);
+        glBindTexture(GL_TEXTURE_2D, ID);
     }
 
     void release(){

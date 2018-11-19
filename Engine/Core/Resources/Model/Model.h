@@ -12,7 +12,6 @@ namespace Global {
 namespace Private {
 
 std::vector<Model*> models;
-
 };
 
 const std::vector<Model*> getModels() {
@@ -23,12 +22,10 @@ const std::vector<Model*> getModels() {
 
 class Model {
    private:
-    btDiscreteDynamicsWorld* physicsWorld;
     btTriangleMesh* collider;
     std::vector<GL::Texture> textures;
     std::vector<Mesh> meshes;
     std::string directory;
-    bool gammaCorrection;
 
     void loadModel(const std::string& path) {
         Assimp::Importer importer;
@@ -118,11 +115,11 @@ class Model {
                         specularMaps.end());
 
         std::vector<GL::Texture> normalMaps = loadMaterialTextures(
-            material, aiTextureType_HEIGHT, "texture_normal");
+            material, aiTextureType_NORMALS, "texture_normal");
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
         std::vector<GL::Texture> heightMaps = loadMaterialTextures(
-            material, aiTextureType_AMBIENT, "texture_height");
+            material, aiTextureType_HEIGHT, "texture_height");
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
         return Mesh(vertices, indices, textures);
@@ -146,9 +143,8 @@ class Model {
                 }
             }
             if (!skip) {
-                GL::Texture texture(TextureUtilities::loadTexture(str.C_Str()));
+                GL::Texture texture(str.C_Str());
                 texture.setType(typeName);
-                texture.setPath(str.C_Str());
                 meshTextures.push_back(texture);
                 textures.push_back(texture);
             }
@@ -157,11 +153,7 @@ class Model {
     }
 
    public:
-    Model(btDiscreteDynamicsWorld* physicsWorld,
-          const std::string& path,
-          bool gamma = false)
-        : gammaCorrection(gamma) {
-        this->physicsWorld = physicsWorld;
+    Model(const std::string& path) {
         loadModel(path);
 
         collider = new btTriangleMesh();
@@ -195,16 +187,6 @@ class Model {
 
     const std::string& getDirectory() const { return this->directory; }
 
-    void setDirectory(const std::string& directory) {
-        this->directory = directory;
-    }
-
-    const bool& getGammaCorrection() const { return this->gammaCorrection; }
-
-    void setGammaCorrection(const bool& gammaCorrection) {
-        this->gammaCorrection = gammaCorrection;
-    }
-
     btGImpactMeshShape* getCollision() {
         btGImpactMeshShape* collision = new btGImpactMeshShape(collider);
         collision->updateBound();
@@ -217,18 +199,6 @@ class Model {
             new btBvhTriangleMeshShape(collider, false);
 
         return collision;
-    }
-
-    void bindTextures(const GL::Shader& shader){
-        for(auto& mesh : meshes){
-            mesh.bindTextures(shader);
-        }
-    }
-
-    void draw() {
-        for (auto& mesh : meshes) {
-            mesh.draw();
-        }
     }
 };
 

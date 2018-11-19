@@ -5,7 +5,7 @@ namespace Engine {
 
 namespace GL {
 
-class Buffer : public ::Engine::Interfaces::Drawable{
+class Buffer {
    private:
     unsigned int VAO, EBO;
     std::vector<unsigned int> VBOs;
@@ -22,7 +22,7 @@ class Buffer : public ::Engine::Interfaces::Drawable{
     void unbind() const { glBindVertexArray(NULL); }
 
     void create(int count = 1) {
-        while (count--) {
+        for(int index = 0; index < count; index++) {
             VBOs.push_back(0);
             glGenBuffers(1, &VBOs.back());
         }
@@ -54,7 +54,7 @@ class Buffer : public ::Engine::Interfaces::Drawable{
                               (void*)pointer);
     }
 
-    void draw(){
+    void draw() const{
         glDrawElements(GL_TRIANGLES, sequenceCount, GL_UNSIGNED_INT, NULL);
     }
     

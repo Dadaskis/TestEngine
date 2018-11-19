@@ -161,16 +161,10 @@ class Window {
     void setBinding(const std::string& bindName,
                     std::vector<int> keys,
                     std::function<void(void)> function) {
-        try {
-            BindingInfo& bind = bindings.at(bindName);
-            bind.keys = keys;
-            bind.function = function;
-        } catch (std::out_of_range) {
-            BindingInfo bind;
-            bind.keys = keys;
-            bind.function = function;
-            bindings[bindName] = bind;
-        }
+        BindingInfo bind;
+        bind.keys = keys;
+        bind.function = function;
+        bindings[bindName] = bind;
     }
 
     void runBindings() {
