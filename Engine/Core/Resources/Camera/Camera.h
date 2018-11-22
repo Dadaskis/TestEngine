@@ -5,18 +5,7 @@ namespace Engine {
 
 class Camera;
 
-namespace Global {
-
-namespace Private {
-
-std::vector<Camera*> cameras;
-};
-
-const std::vector<Camera*>& getCameras() {
-    return Private::cameras;
-}
-
-};  // namespace Global
+GLOBAL_RESOURCE_ARRAY_DEFINE(Camera, cameras, GetCameras);
 
 enum CameraMove : int {
     CAMERA_MOVE_FORWARD,
@@ -29,8 +18,6 @@ enum CameraMove : int {
 
 class Camera {
    private:
-    std::vector<Camera*>::iterator iterator;
-
     static constexpr float YAW = -90.0f;
     static constexpr float PITCH = 0.0f;
     static constexpr float SPEED = 2.5f;
@@ -63,8 +50,7 @@ class Camera {
     }
 
     void globalAdd() {
-        Global::Private::cameras.push_back(this);
-        iterator = Global::Private::cameras.end();
+        GLOBAL_RESOURCES_ARRAY_REGISTER(cameras);
     }
 
    public:
@@ -169,7 +155,7 @@ class Camera {
 
     glm::vec3 getFront() { return front; }
 
-    ~Camera() { Global::Private::cameras.erase(iterator); }
+    ~Camera() { GLOBAL_RESOURCE_ARRAY_REMOVE(cameras); }
 };
 
 };  // namespace Engine

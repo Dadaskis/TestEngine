@@ -5,20 +5,7 @@
 
 namespace Engine {
 
-class Model;
-
-namespace Global {
-
-namespace Private {
-
-std::vector<Model*> models;
-};
-
-const std::vector<Model*> getModels() {
-    return Private::models;
-}
-
-};  // namespace Global
+GLOBAL_RESOURCE_ARRAY_DEFINE(Model, models, GetModels);
 
 class Model {
    private:
@@ -154,6 +141,7 @@ class Model {
 
    public:
     Model(const std::string& path) {
+        GLOBAL_RESOURCE_ARRAY_REGISTER(models);
         loadModel(path);
 
         collider = new btTriangleMesh();
@@ -199,6 +187,10 @@ class Model {
             new btBvhTriangleMeshShape(collider, false);
 
         return collision;
+    }
+
+    ~Model(){
+        GLOBAL_RESOURCE_ARRAY_REMOVE(models);
     }
 };
 

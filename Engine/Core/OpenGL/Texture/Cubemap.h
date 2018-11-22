@@ -8,29 +8,19 @@ namespace GL {
 class Cubemap;
 };
 
-namespace Global {
 
-namespace Private {
-
-std::vector<::Engine::GL::Cubemap*> cubemaps;
-};
-
-const std::vector<::Engine::GL::Cubemap*>& getCubemaps() {
-    return Private::cubemaps;
-}
-
-};  // namespace Global
+GLOBAL_RESOURCES_ARRAY_DEFINE(GL::Cubemap, cubemaps, GetCubemaps);
 
 namespace GL {
 
 class Cubemap : public Texture {
-   private:
-    std::vector<Cubemap*>::iterator iterator;
-
    public:
     Cubemap(int ID) {
-        Engine::Global::Private::cubemaps.push_back(this);
-        iterator = Global::Private::cubemaps.end();
+        GLOBAL_RESOURCES_ARRAY_REGISTER(cubemaps);
+    }
+
+    ~Cubemap(){
+        GLOBAL_RESOURCES_ARRAY_REMOVE(cubemaps);
     }
 };
 

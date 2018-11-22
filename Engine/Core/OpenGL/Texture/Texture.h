@@ -9,19 +9,7 @@ class Texture;
 
 };
 
-namespace Global{
-
-namespace Private{
-
-std::vector<GL::Texture*> textures;
-
-};
-
-const std::vector<GL::Texture*>& getTextures(){
-    return Private::textures;
-}
-
-};
+GLOBAL_RESOURCES_ARRAY_DEFINE(GL::Texture, textures, GetTextures);
 
 namespace GL{
 
@@ -31,14 +19,12 @@ private:
     int activeUnit;
     std::string type;
     std::string path;
-    std::vector<Texture*>::iterator iterator;
 public:
     Texture() {}
     
     Texture(int ID) {
         this->ID = ID;
-        Engine::Global::Private::textures.push_back(this);
-        iterator = Global::Private::textures.end();
+        GLOBAL_RESOURCES_ARRAY_REGISTER(textures);
     }
 
     Texture(const std::string& path){
@@ -88,7 +74,7 @@ public:
 
     void release(){
         glDeleteTextures(1, &ID);
-        Global::Private::textures.erase(iterator);
+        GLOBAL_RESOURCES_ARRAY_REMOVE(textures);
     }
 };
 

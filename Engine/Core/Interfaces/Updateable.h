@@ -8,32 +8,21 @@ namespace Interfaces {
 class Updateable;
 };
 
-namespace Global {
-
-namespace Private {
-
-std::vector<::Engine::Interfaces::Updateable*> updateables;
-};
-
-const std::vector<::Engine::Interfaces::Updateable*>& getUpdateables() {
-    return Private::updateables;
-}
-
-};  // namespace Global
+GLOBAL_RESOURCES_ARRAY_DEFINE(Interfaces::Updateable, updateables, GetUpdateables);
 
 namespace Interfaces {
 
 class Updateable {
-   private:
-    std::vector<Updateable*>::iterator iterator;
-
    public:
     Updateable() {
-        Global::Private::updateables.push_back(this);
-        iterator = Global::Private::updateables.end();
+        GLOBAL_RESOURCES_ARRAY_REGISTER(updateables);
     }
 
     virtual void update() = 0;
+
+    ~Updateable(){
+        GLOBAL_RESOURCES_ARRAY_REMOVE(updateables);
+    }
 };
 
 };  // namespace Interfaces

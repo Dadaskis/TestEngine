@@ -1,6 +1,19 @@
 #ifndef ENGINE_UTILITIES_INCLUDE
 #define ENGINE_UTILITIES_INCLUDE
 
+#define GLOBAL_RESOURCE_ARRAY_DEFINE(className, name, getterName)          \
+    {                                                                      \
+        namespace Global {                                                 \
+        namespace Private {                                                \
+        std::list<className*> name;                                        \
+        };                                                                 \
+        const std::list<className*> getterName() { return Private::name; } \
+        };                                                                 \
+    }
+
+#define GLOBAL_RESOURCE_ARRAY_REGISTER(name) Global::Private::name.push_back(this);
+#define GLOBAL_RESOURCE_ARRAY_REMOVE(name) Global::Private::name.remove(this);
+
 namespace Engine {
 
 namespace Utilities {

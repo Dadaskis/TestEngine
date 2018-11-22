@@ -8,34 +8,19 @@ namespace Interfaces {
 class Drawable;
 }
 
-namespace Global {
-
-namespace Private {
-
-std::vector<::Engine::Interfaces::Drawable*> drawables;
-}
-
-const std::vector<::Engine::Interfaces::Drawable*>& getDrawables() {
-    return Private::drawables;
-}
-
-};  // namespace Global
+GLOBAL_RESOURCES_ARRAY_DEFINE(Interfaces::Drawable, drawables, GetDrawables);
 
 namespace Interfaces {
 
 class Drawable {
-   private:
-    std::vector<Drawable*>::iterator drawableIterator;
-
    public:
     Drawable() {
-        Global::Private::drawables.push_back(this);
-        drawableIterator = Global::Private::drawables.end();
+        GLOBAL_RESOURCES_ARRAY_REGISTER(drawables);
     }
 
     virtual void draw() = 0;
 
-    ~Drawable() { Global::Private::drawables.erase(drawableIterator); }
+    ~Drawable() { GLOBAL_RESOURCES_ARRAY_REMOVE(drawables) }
 };
 
 };  // namespace Interfaces
