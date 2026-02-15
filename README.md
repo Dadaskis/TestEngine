@@ -10,7 +10,7 @@ TestEngine is a simple 3D game engine built from scratch, demonstrating modern O
 
 - **OpenGL Rendering Pipeline**
   - Custom shader system (vertex/fragment shaders)
-  - Advanced lighting with support for multiple light types (default and sun-like)
+  - Basic lighting with support for multiple light types (default and sun-like)
   - Framebuffer support for post-processing
   - Model loading via Assimp with texture support
   - Plates as primitive shapes
